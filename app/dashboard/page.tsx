@@ -5,8 +5,6 @@ import { Sidebar } from "@/components/dashboard/sidebar"
 import { PortfolioOverview } from "@/components/dashboard/portfolio-overview"
 import { RecentNotes } from "@/components/dashboard/recent-notes"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Bell, User } from "lucide-react"
 
 export default function DashboardPage() {
   const [walletAddress, setWalletAddress] = useState("0x1234567890123456789012345678901234567890")
@@ -30,14 +28,6 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">
                 ウォレット: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
               </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <User className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </header>

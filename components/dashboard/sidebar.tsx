@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, Users, Settings, PlusCircle, BarChart3 } from "lucide-react"
+import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut } from "lucide-react"
 
 interface SidebarProps {
   className?: string
@@ -12,6 +12,7 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
 
   const navigation = [
     { name: "ダッシュボード", href: "/dashboard", icon: LayoutDashboard },
@@ -19,6 +20,10 @@ export function Sidebar({ className }: SidebarProps) {
     { name: "パフォーマンス", href: "/analytics", icon: BarChart3 },
     { name: "コミュニティ", href: "/community", icon: Users },
   ]
+
+  const handleLogout = () => {
+    router.push("/")
+  }
 
   return (
     <div className={cn("pb-12 w-64", className)}>
@@ -49,21 +54,14 @@ export function Sidebar({ className }: SidebarProps) {
                 </Button>
               </Link>
             ))}
-          </div>
-        </div>
-
-        <div className="px-3 py-2">
-          <div className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">アカウント</h3>
-            <Link href="/settings" passHref>
-              <Button
-                variant={pathname === "/settings" ? "secondary" : "ghost"}
-                className="w-full justify-start"
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                設定
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              ログアウト
+            </Button>
           </div>
         </div>
       </div>
