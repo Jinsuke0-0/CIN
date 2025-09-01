@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,14 +13,23 @@ export default function HomePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    const storedAddress = localStorage.getItem("walletAddress")
+    if (storedAddress) {
+      setAccount(storedAddress)
+    }
+  }, [])
+
   const handleConnect = (address: string) => {
     setAccount(address)
+    localStorage.setItem("walletAddress", address)
     setIsDialogOpen(false)
     router.push("/dashboard")
   }
 
   const handleDisconnect = () => {
     setAccount(null)
+    localStorage.removeItem("walletAddress")
   }
 
   return (

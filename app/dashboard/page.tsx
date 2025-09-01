@@ -1,13 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { PortfolioOverview } from "@/components/dashboard/portfolio-overview"
 import { RecentNotes } from "@/components/dashboard/recent-notes"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function DashboardPage() {
-  const [walletAddress, setWalletAddress] = useState("0x1234567890123456789012345678901234567890")
+  const [walletAddress, setWalletAddress] = useState("")
+  const router = useRouter()
+
+  useEffect(() => {
+    const storedAddress = localStorage.getItem("walletAddress")
+    if (storedAddress) {
+      setWalletAddress(storedAddress)
+    } else {
+      router.push("/")
+    }
+  }, [router])
 
   return (
     <div className="flex h-screen bg-background">
@@ -25,9 +36,11 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between px-6 py-4">
             <div>
               <h1 className="text-2xl font-bold text-card-foreground">ダッシュボード</h1>
-              <p className="text-sm text-muted-foreground">
-                ウォレット: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-              </p>
+              {walletAddress && (
+                <p className="text-sm text-muted-foreground">
+                  ウォレット: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                </p>
+              )}
             </div>
           </div>
         </header>

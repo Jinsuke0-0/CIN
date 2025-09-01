@@ -30,7 +30,12 @@ interface PublicNote {
   isPurchased?: boolean
 }
 
-export function NoteFeed() {
+interface NoteFeedProps {
+  title?: string
+  subtitle?: string
+}
+
+export function NoteFeed({ title = "コミュニティフィード", subtitle = "投資家の知見とノートを発見" }: NoteFeedProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("trending")
@@ -152,8 +157,8 @@ export function NoteFeed() {
     <div className="space-y-6">
       {/* ヘッダー */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">コミュニティフィード</h1>
-        <p className="text-muted-foreground">投資家の知見とノートを発見</p>
+        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <p className="text-muted-foreground">{subtitle}</p>
       </div>
 
       {/* フィルター・検索 */}
