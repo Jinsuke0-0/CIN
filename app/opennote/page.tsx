@@ -1,7 +1,7 @@
 "use client"
 
-import { NoteFeed } from "@/components/community/note-feed"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { NoteFeed } from "@/components/notes/note-feed"
 
 export default function OpenNotePage() {
   return (
@@ -16,7 +16,7 @@ export default function OpenNotePage() {
       {/* メインコンテンツ */}
       <div className="flex-1 overflow-hidden">
         <main className="h-full overflow-y-auto p-6">
-          <NoteFeed title="Open Note" subtitle="公開されている投資ノートを閲覧します" />
+          <NoteFeed title="Open Notes" subtitle="Browse publicly shared investment notes." />
         </main>
       </div>
     </div>

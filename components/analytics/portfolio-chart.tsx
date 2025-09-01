@@ -18,7 +18,7 @@ export function PortfolioChart() {
   const [timeRange, setTimeRange] = useState("1M")
   const [comparison, setComparison] = useState("BTC")
 
-  // モックデータ
+  // Mock data
   const portfolioData: PortfolioData[] = [
     { date: "2024-01-01", portfolioValue: 100000, btcPrice: 42000, ethPrice: 2500, totalInvested: 95000 },
     { date: "2024-01-05", portfolioValue: 105000, btcPrice: 43500, ethPrice: 2600, totalInvested: 95000 },
@@ -35,7 +35,7 @@ export function PortfolioChart() {
   const totalGainPercent = ((totalGain / initialValue) * 100).toFixed(2)
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("ja-JP", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
@@ -43,7 +43,7 @@ export function PortfolioChart() {
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("ja-JP", {
+    return new Date(dateStr).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     })
@@ -70,8 +70,8 @@ export function PortfolioChart() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-card-foreground">ポートフォリオパフォーマンス</CardTitle>
-            <CardDescription>投資成果の推移と比較分析</CardDescription>
+            <CardTitle className="text-card-foreground">Portfolio Performance</CardTitle>
+            <CardDescription>Trends and comparative analysis of investment results</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <Select value={comparison} onValueChange={setComparison}>
@@ -81,7 +81,7 @@ export function PortfolioChart() {
               <SelectContent>
                 <SelectItem value="BTC">vs BTC</SelectItem>
                 <SelectItem value="ETH">vs ETH</SelectItem>
-                <SelectItem value="none">比較なし</SelectItem>
+                <SelectItem value="none">No Comparison</SelectItem>
               </SelectContent>
             </Select>
             <Select value={timeRange} onValueChange={setTimeRange}>
@@ -89,20 +89,20 @@ export function PortfolioChart() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1W">1週間</SelectItem>
-                <SelectItem value="1M">1ヶ月</SelectItem>
-                <SelectItem value="3M">3ヶ月</SelectItem>
-                <SelectItem value="1Y">1年</SelectItem>
+                <SelectItem value="1W">1 Week</SelectItem>
+                <SelectItem value="1M">1 Month</SelectItem>
+                <SelectItem value="3M">3 Months</SelectItem>
+                <SelectItem value="1Y">1 Year</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* パフォーマンス指標 */}
+        {/* Performance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-card-foreground">{formatCurrency(currentValue)}</div>
-            <div className="text-sm text-muted-foreground">現在の価値</div>
+            <div className="text-sm text-muted-foreground">Current Value</div>
           </div>
           <div className="text-center">
             <div
@@ -113,14 +113,14 @@ export function PortfolioChart() {
               {totalGain >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
               {formatCurrency(Math.abs(totalGain))}
             </div>
-            <div className="text-sm text-muted-foreground">総損益</div>
+            <div className="text-sm text-muted-foreground">Total P&L</div>
           </div>
           <div className="text-center">
             <div className={`text-2xl font-bold ${totalGain >= 0 ? "text-chart-1" : "text-chart-3"}`}>
               {totalGain >= 0 ? "+" : ""}
               {totalGainPercent}%
             </div>
-            <div className="text-sm text-muted-foreground">利回り</div>
+            <div className="text-sm text-muted-foreground">Return</div>
           </div>
         </div>
       </CardHeader>
@@ -141,7 +141,7 @@ export function PortfolioChart() {
                 dataKey="portfolioValue"
                 stroke="hsl(var(--primary))"
                 strokeWidth={3}
-                name="ポートフォリオ"
+                name="Portfolio"
                 dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
               />
               {comparison === "BTC" && (
@@ -150,7 +150,7 @@ export function PortfolioChart() {
                   dataKey="btcPrice"
                   stroke="hsl(var(--chart-2))"
                   strokeWidth={2}
-                  name="BTC価格"
+                  name="BTC Price"
                   dot={false}
                 />
               )}
@@ -160,7 +160,7 @@ export function PortfolioChart() {
                   dataKey="ethPrice"
                   stroke="hsl(var(--chart-4))"
                   strokeWidth={2}
-                  name="ETH価格"
+                  name="ETH Price"
                   dot={false}
                 />
               )}

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch } from "lucide-react"
+import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper } from "lucide-react"
 
 interface SidebarProps {
   className?: string
@@ -15,14 +15,14 @@ export function Sidebar({ className }: SidebarProps) {
   const router = useRouter()
 
   const cinPrivateNav = [
-    { name: "ダッシュボード", href: "/dashboard", icon: LayoutDashboard },
-    { name: "投資ノート", href: "/notes", icon: FileText },
-    { name: "パフォーマンス", href: "/analytics", icon: BarChart3 },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Investment Notes", href: "/notes", icon: FileText },
+    { name: "Performance", href: "/analytics", icon: BarChart3 },
   ]
 
   const cinPublicNav = [
-    { name: "コミュニティ", href: "/community", icon: Users },
-    { name: "Open Note", href: "/opennote", icon: FileSearch },
+    { name: "Open Notes", href: "/opennote", icon: FileSearch },
+    { name: "Web3 News", href: "/web3-news", icon: Newspaper },
   ]
 
   const handleLogout = () => {
@@ -46,12 +46,12 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="px-3 py-2">
             <Button className="w-full mb-4 bg-primary hover:bg-primary/90" onClick={handleNewNote}>
               <PlusCircle className="mr-2 h-4 w-4" />
-              新しいノート
+              New Note
             </Button>
           </div>
 
           <div className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">CIN Private</h3>
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Private</h3>
             {cinPrivateNav.map((item) => (
               <Link href={item.href} key={item.name} passHref>
                 <Button
@@ -67,7 +67,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
         <div className="px-3 py-2">
           <div className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">CIN Public</h3>
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Public</h3>
             {cinPublicNav.map((item) => (
               <Link href={item.href} key={item.name} passHref>
                 <Button
@@ -81,16 +81,18 @@ export function Sidebar({ className }: SidebarProps) {
             ))}
           </div>
         </div>
+        <div className="px-3 py-2">
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
       <div className="mt-auto px-3 py-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          ログアウト
-        </Button>
       </div>
     </div>
   )

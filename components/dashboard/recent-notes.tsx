@@ -34,7 +34,7 @@ export function RecentNotes() {
   }, [])
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ja-JP", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -44,13 +44,13 @@ export function RecentNotes() {
   return (
     <Card className="bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-card-foreground">最近の投資ノート</CardTitle>
-        <CardDescription>あなたの最新の投資分析と戦略</CardDescription>
+        <CardTitle className="text-card-foreground">Recent Investment Notes</CardTitle>
+        <CardDescription>Your latest investment analysis and strategies</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {recentNotes.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">まだノートがありません。</p>
+            <p className="text-muted-foreground text-center py-4">No notes yet.</p>
           ) : (
             recentNotes.map((note) => (
               <div key={note.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
@@ -60,7 +60,7 @@ export function RecentNotes() {
                     <h4 className="text-sm font-medium text-card-foreground">{note.title}</h4>
                     <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
                     <div className="flex items-center gap-2">
-                      <Badge variant={note.isPublic ? "default" : "secondary"}>{note.isPublic ? "公開" : "非公開"}</Badge>
+                      <Badge variant={note.isPublic ? "default" : "secondary"}>{note.isPublic ? "Public" : "Private"}</Badge>
                       <span className="text-xs text-muted-foreground">{formatDate(note.updatedAt)}</span>
                     </div>
                   </div>
@@ -81,7 +81,7 @@ export function RecentNotes() {
         </div>
         <Link href="/notes" passHref>
           <Button variant="outline" className="w-full mt-4 bg-transparent">
-            すべてのノートを見る
+            View all notes
           </Button>
         </Link>
       </CardContent>

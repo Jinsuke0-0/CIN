@@ -35,15 +35,15 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
 
   const categories = [
     "all",
-    "技術分析",
-    "ファンダメンタル分析",
-    "取引戦略",
-    "市場動向",
-    "ポートフォリオ管理",
-    "リスク管理",
+    "Technical Analysis",
+    "Fundamental Analysis",
+    "Trading Strategy",
+    "Market Trends",
+    "Portfolio Management",
+    "Risk Management",
     "DeFi",
     "NFT",
-    "その他",
+    "Other",
   ]
 
   const filteredNotes = notes.filter((note) => {
@@ -71,7 +71,7 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
   })
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ja-JP", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -80,19 +80,19 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
 
   return (
     <div className="space-y-6">
-      {/* ヘッダー */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">投資ノート</h1>
-          <p className="text-muted-foreground">あなたの投資分析と戦略を管理</p>
+          <h1 className="text-2xl font-bold text-foreground">Investment Notes</h1>
+          <p className="text-muted-foreground">Manage your investment analysis and strategies</p>
         </div>
         <Button onClick={onCreateNote} className="bg-primary hover:bg-primary/90">
           <Plus className="mr-2 h-4 w-4" />
-          新しいノート
+          New Note
         </Button>
       </div>
 
-      {/* フィルター・検索 */}
+      {/* Filter & Search */}
       <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -101,52 +101,52 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
               <Input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="ノートを検索..."
+                placeholder="Search notes..."
                 className="pl-10 bg-input border-border"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="bg-input border-border">
-                <SelectValue placeholder="カテゴリ" />
+                <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>
-                    {category === "all" ? "すべてのカテゴリ" : category}
+                    {category === "all" ? "All Categories" : category}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="bg-input border-border">
-                <SelectValue placeholder="並び順" />
+                <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="updated">更新日順</SelectItem>
-                <SelectItem value="created">作成日順</SelectItem>
-                <SelectItem value="views">閲覧数順</SelectItem>
-                <SelectItem value="likes">いいね順</SelectItem>
+                <SelectItem value="updated">Last Updated</SelectItem>
+                <SelectItem value="created">Created Date</SelectItem>
+                <SelectItem value="views">Views</SelectItem>
+                <SelectItem value="likes">Likes</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Filter className="h-4 w-4" />
-              {sortedNotes.length} 件のノート
+              {sortedNotes.length} Notes
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* ノート一覧 */}
+      {/* Note List */}
       <div className="grid gap-4">
         {sortedNotes.length === 0 ? (
           <Card className="bg-card border-border">
             <CardContent className="text-center py-12">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-card-foreground mb-2">ノートが見つかりません</h3>
-              <p className="text-muted-foreground mb-4">検索条件を変更するか、新しいノートを作成してください</p>
+              <h3 className="text-lg font-medium text-card-foreground mb-2">No notes found</h3>
+              <p className="text-muted-foreground mb-4">Change your search criteria or create a new note</p>
               <Button onClick={onCreateNote} className="bg-primary hover:bg-primary/90">
                 <Plus className="mr-2 h-4 w-4" />
-                新しいノート
+                New Note
               </Button>
             </CardContent>
           </Card>
@@ -161,7 +161,7 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{note.category}</Badge>
-                      <Badge variant={note.isPublic ? "default" : "outline"}>{note.isPublic ? "公開" : "非公開"}</Badge>
+                      <Badge variant={note.isPublic ? "default" : "outline"}>{note.isPublic ? "Public" : "Private"}</Badge>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -196,7 +196,7 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
                       {note.likes}
                     </div>
                   </div>
-                  <div>更新: {formatDate(note.updatedAt)}</div>
+                  <div>Updated: {formatDate(note.updatedAt)}</div>
                 </div>
               </CardContent>
             </Card>

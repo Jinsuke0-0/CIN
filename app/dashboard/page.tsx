@@ -22,45 +22,45 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* サイドバー */}
+      {/* Sidebar */}
       <div className="hidden md:flex md:w-64 md:flex-col">
         <div className="flex flex-col flex-grow pt-5 bg-sidebar border-r border-sidebar-border overflow-y-auto">
           <Sidebar />
         </div>
       </div>
 
-      {/* メインコンテンツ */}
+      {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* ヘッダー */}
+        {/* Header */}
         <header className="bg-card border-b border-border">
           <div className="flex items-center justify-between px-6 py-4">
             <div>
-              <h1 className="text-2xl font-bold text-card-foreground">ダッシュボード</h1>
+              <h1 className="text-2xl font-bold text-card-foreground">Dashboard</h1>
               {walletAddress && (
                 <p className="text-sm text-muted-foreground">
-                  ウォレット: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                  Wallet: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                 </p>
               )}
             </div>
           </div>
         </header>
 
-        {/* ダッシュボードコンテンツ */}
+        {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
-            {/* ポートフォリオ概要 */}
+            {/* Portfolio Overview */}
             <PortfolioOverview />
 
-            {/* メインコンテンツグリッド */}
+            {/* Main Content Grid */}
             <div className="grid gap-6 md:grid-cols-2">
-              {/* 最近のノート */}
+              {/* Recent Notes */}
               <RecentNotes />
 
-              {/* 市場概況 */}
+              {/* Market Overview */}
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-card-foreground">市場概況</CardTitle>
-                  <CardDescription>主要暗号資産の価格動向</CardDescription>
+                  <CardTitle className="text-card-foreground">Market Overview</CardTitle>
+                  <CardDescription>Price movements of major cryptocurrencies</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -88,25 +88,25 @@ export default function DashboardPage() {
               </Card>
             </div>
 
-            {/* CINトークン情報 */}
+            {/* CIN Token Info */}
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-card-foreground">CINトークン</CardTitle>
-                <CardDescription>あなたのCINトークン残高と報酬</CardDescription>
+                <CardTitle className="text-card-foreground">CIN Token</CardTitle>
+                <CardDescription>Your CIN token balance and rewards</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">1,250</div>
-                    <div className="text-sm text-muted-foreground">保有CIN</div>
+                    <div className="text-sm text-muted-foreground">CIN Held</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-chart-1">+45</div>
-                    <div className="text-sm text-muted-foreground">今月の報酬</div>
+                    <div className="text-sm text-muted-foreground">This Month's Rewards</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-chart-2">$2.50</div>
-                    <div className="text-sm text-muted-foreground">CIN価格</div>
+                    <div className="text-sm text-muted-foreground">CIN Price</div>
                   </div>
                 </div>
               </CardContent>
