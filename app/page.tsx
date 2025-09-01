@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Wallet, FileText, BarChart3, Users, Shield } from "lucide-react"
@@ -10,10 +11,12 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 export default function HomePage() {
   const [account, setAccount] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const router = useRouter()
 
   const handleConnect = (address: string) => {
     setAccount(address)
     setIsDialogOpen(false)
+    router.push("/dashboard")
   }
 
   const handleDisconnect = () => {

@@ -1,31 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { WalletConnect } from "@/components/auth/wallet-connect"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { PortfolioOverview } from "@/components/dashboard/portfolio-overview"
 import { RecentNotes } from "@/components/dashboard/recent-notes"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bell, User, LogOut } from "lucide-react"
+import { Bell, User } from "lucide-react"
 
 export default function DashboardPage() {
-  const [isConnected, setIsConnected] = useState(false)
-  const [walletAddress, setWalletAddress] = useState("")
-
-  const handleWalletConnect = (address: string) => {
-    setWalletAddress(address)
-    setIsConnected(true)
-  }
-
-  const handleDisconnect = () => {
-    setIsConnected(false)
-    setWalletAddress("")
-  }
-
-  if (!isConnected) {
-    return <WalletConnect onConnect={handleWalletConnect} />
-  }
+  const [walletAddress, setWalletAddress] = useState("0x1234567890123456789012345678901234567890")
 
   return (
     <div className="flex h-screen bg-background">
@@ -53,9 +37,6 @@ export default function DashboardPage() {
               </Button>
               <Button variant="ghost" size="sm">
                 <User className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleDisconnect}>
-                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
