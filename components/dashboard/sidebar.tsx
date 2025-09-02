@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper } from "lucide-react"
+import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar } from "lucide-react"
 
 interface SidebarProps {
   className?: string
@@ -23,6 +23,8 @@ export function Sidebar({ className }: SidebarProps) {
   const cinPublicNav = [
     { name: "Open Notes", href: "/opennote", icon: FileSearch },
     { name: "Web3 News", href: "/web3-news", icon: Newspaper },
+    { name: "DeFi", href: "/defi", icon: Shield },
+    { name: "Official Events", href: "/official-events", icon: Calendar },
   ]
 
   const handleLogout = () => {
