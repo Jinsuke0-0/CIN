@@ -32,15 +32,15 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [trades, setTrades] = useState<any[]>([])
 
   const categories = [
-    "技術分析",
-    "ファンダメンタル分析",
-    "取引戦略",
-    "市場動向",
-    "ポートフォリオ管理",
-    "リスク管理",
+    "Technical Analysis",
+    "Fundamental Analysis",
+    "Trading Strategy",
+    "Market Trends",
+    "Portfolio Management",
+    "Risk Management",
     "DeFi",
     "NFT",
-    "その他",
+    "Other",
   ]
 
   const addTag = () => {
@@ -76,6 +76,11 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   }
 
   const handleSave = () => {
+    if (isPublic && content.trim() === '') {
+      alert('Note Content is required for public notes.');
+      return;
+    }
+
     const noteData = {
       id: note?.id,
       title,
@@ -92,42 +97,42 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* ヘッダー */}
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">{note?.id ? "ノートを編集" : "新しいノートを作成"}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{note?.id ? "Edit Note" : "Create New Note"}</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onCancel}>
-            キャンセル
+            Cancel
           </Button>
           <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
             <Save className="mr-2 h-4 w-4" />
-            保存
+            Save
           </Button>
         </div>
       </div>
 
-      {/* 基本情報 */}
+      {/* Basic Information */}
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-card-foreground">基本情報</CardTitle>
+          <CardTitle className="text-card-foreground">Basic Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-card-foreground mb-2 block">タイトル</label>
+            <label className="text-sm font-medium text-card-foreground mb-2 block">Title</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="投資ノートのタイトルを入力..."
+              placeholder="Enter investment note title..."
               className="bg-input border-border"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-card-foreground mb-2 block">カテゴリ</label>
+              <label className="text-sm font-medium text-card-foreground mb-2 block">Category</label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="bg-input border-border">
-                  <SelectValue placeholder="カテゴリを選択" />
+                  <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
@@ -140,7 +145,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-card-foreground mb-2 block">公開設定</label>
+              <label className="text-sm font-medium text-card-foreground mb-2 block">Visibility</label>
               <Select
                 value={isPublic ? "public" : "private"}
                 onValueChange={(value) => setIsPublic(value === "public")}
@@ -149,21 +154,21 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="private">非公開</SelectItem>
-                  <SelectItem value="public">公開</SelectItem>
+                  <SelectItem value="private">Private</SelectItem>
+                  <SelectItem value="public">Public</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          {/* タグ */}
+          {/* Tags */}
           <div>
-            <label className="text-sm font-medium text-card-foreground mb-2 block">タグ</label>
+            <label className="text-sm font-medium text-card-foreground mb-2 block">Tags</label>
             <div className="flex gap-2 mb-2">
               <Input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
-                placeholder="タグを追加..."
+                placeholder="Add a tag..."
                 className="bg-input border-border"
                 onKeyPress={(e) => e.key === "Enter" && addTag()}
               />
@@ -182,40 +187,42 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         </CardContent>
       </Card>
 
-      {/* ノート内容 */}
-      <Card className="bg-card border-border">
-        <CardHeader>
-          <CardTitle className="text-card-foreground">ノート内容</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="投資分析、戦略、市場観察などを記録してください..."
-            className="min-h-[300px] bg-input border-border resize-none"
-          />
-        </CardContent>
-      </Card>
+      {/* Note Content */}
+      {isPublic && (
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-card-foreground">Note Content</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Record your investment analysis, strategies, market observations, etc..."
+              className="min-h-[300px] bg-input border-border resize-none"
+            />
+          </CardContent>
+        </Card>
+      )}
 
-      {/* 取引記録 */}
+      {/* Trade Log */}
       <Card className="bg-card border-border">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-card-foreground">取引記録</CardTitle>
+          <CardTitle className="text-card-foreground">Trade Log</CardTitle>
           <Button onClick={addTrade} variant="outline" size="sm">
             <DollarSign className="mr-2 h-4 w-4" />
-            取引を追加
+            Add Trade
           </Button>
         </CardHeader>
         <CardContent>
           {trades.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">取引記録がありません</p>
+            <p className="text-muted-foreground text-center py-8">No trade records yet</p>
           ) : (
             <div className="space-y-4">
               {trades.map((trade) => (
                 <div key={trade.id} className="p-4 border border-border rounded-lg">
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
-                      <label className="text-xs text-muted-foreground">銘柄</label>
+                      <label className="text-xs text-muted-foreground">Symbol</label>
                       <Input
                         value={trade.symbol}
                         onChange={(e) => updateTrade(trade.id, "symbol", e.target.value)}
@@ -224,7 +231,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">種類</label>
+                      <label className="text-xs text-muted-foreground">Type</label>
                       <Select value={trade.type} onValueChange={(value) => updateTrade(trade.id, "type", value)}>
                         <SelectTrigger className="bg-input border-border">
                           <SelectValue />
@@ -233,20 +240,20 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                           <SelectItem value="buy">
                             <div className="flex items-center gap-2">
                               <TrendingUp className="h-4 w-4 text-chart-1" />
-                              買い
+                              Buy
                             </div>
                           </SelectItem>
                           <SelectItem value="sell">
                             <div className="flex items-center gap-2">
                               <TrendingDown className="h-4 w-4 text-chart-3" />
-                              売り
+                              Sell
                             </div>
                           </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">数量</label>
+                      <label className="text-xs text-muted-foreground">Amount</label>
                       <Input
                         value={trade.amount}
                         onChange={(e) => updateTrade(trade.id, "amount", e.target.value)}
@@ -255,7 +262,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">価格</label>
+                      <label className="text-xs text-muted-foreground">Price</label>
                       <Input
                         value={trade.price}
                         onChange={(e) => updateTrade(trade.id, "price", e.target.value)}
@@ -264,7 +271,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">日付</label>
+                      <label className="text-xs text-muted-foreground">Date</label>
                       <Input
                         type="date"
                         value={trade.date}
@@ -277,11 +284,11 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                     <Input
                       value={trade.notes}
                       onChange={(e) => updateTrade(trade.id, "notes", e.target.value)}
-                      placeholder="取引メモ..."
+                      placeholder="Trade notes..."
                       className="bg-input border-border flex-1 mr-2"
                     />
                     <Button variant="destructive" size="sm" onClick={() => removeTrade(trade.id)}>
-                      削除
+                      Delete
                     </Button>
                   </div>
                 </div>
