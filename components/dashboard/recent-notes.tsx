@@ -12,7 +12,13 @@ export function RecentNotes() {
   const { notes } = useNotes()
 
   const recentNotes = useMemo(() => {
-    return [...notes]
+    // Defensive filtering: ensure notes have valid IDs and are unique.
+    const validNotes = notes.filter(note => note && note.id);
+    const uniqueNotes = validNotes.filter(
+      (note, index, self) => index === self.findIndex((t) => t.id === note.id)
+    )
+
+    return [...uniqueNotes]
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
       .slice(0, 3)
   }, [notes])

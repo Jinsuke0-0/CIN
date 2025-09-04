@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,7 +47,14 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
     "Other",
   ]
 
-  const filteredNotes = notes.filter((note) => {
+  const uniqueNotes = useMemo(() => {
+    const validNotes = notes.filter(note => note && note.id);
+    return validNotes.filter((note, index, self) => 
+      index === self.findIndex((t) => t.id === note.id)
+    )
+  }, [notes]);
+
+  const filteredNotes = uniqueNotes.filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||

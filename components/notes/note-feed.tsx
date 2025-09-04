@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -14,6 +15,13 @@ interface NoteFeedProps {
 }
 
 export function NoteFeed({ title, subtitle, notes }: NoteFeedProps) {
+  const uniqueNotes = useMemo(() => {
+    const validNotes = notes.filter(note => note && note.id);
+    return validNotes.filter((note, index, self) => 
+      index === self.findIndex((t) => t.id === note.id)
+    )
+  }, [notes]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -32,7 +40,7 @@ export function NoteFeed({ title, subtitle, notes }: NoteFeedProps) {
       </Card>
       <Separator className="bg-gray-700" />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {notes.map((note) => (
+        {uniqueNotes.map((note) => (
           <Link href={`/notes?noteId=${note.id}`} key={note.id} passHref>
             <Card className="flex flex-col bg-neutral-900 text-gray-100 border border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:border-primary hover:shadow-xl h-full">
               <CardHeader className="p-4 pb-2">
