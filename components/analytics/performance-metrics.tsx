@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { usePortfolio } from "@/contexts/PortfolioContext"
-import { DollarSign, Activity, AlertCircle } from "lucide-react"
+import { ArrowDown, ArrowUp, Repeat, Activity } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 // Helper to format currency
@@ -15,8 +15,8 @@ export function PerformanceMetrics() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
-        {Array.from({ length: 2 }).map((_, index) => (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
           <Card key={index} className="bg-card border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-4 w-2/3" />
@@ -33,12 +33,28 @@ export function PerformanceMetrics() {
 
   const displayMetrics = [
     {
-      title: "Total Trade Volume",
-      value: formatCurrency(metrics.totalTradeVolume),
-      description: "Sum of (Amount * Price) for all trades",
-      icon: DollarSign,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      title: "Total Buy Volume",
+      value: formatCurrency(metrics.totalBuyVolume),
+      description: "Total value of all buy trades",
+      icon: ArrowUp,
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
+    },
+    {
+      title: "Total Sell Volume",
+      value: formatCurrency(metrics.totalSellVolume),
+      description: "Total value of all sell trades",
+      icon: ArrowDown,
+      color: "text-red-500",
+      bgColor: "bg-red-500/10",
+    },
+    {
+      title: "Average Trade Size",
+      value: formatCurrency(metrics.averageTradeSize),
+      description: "Average value per trade",
+      icon: Repeat,
+      color: "text-sky-500",
+      bgColor: "bg-sky-500/10",
     },
     {
       title: "Total Trades",
@@ -51,7 +67,7 @@ export function PerformanceMetrics() {
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {displayMetrics.map((metric) => (
         <Card key={metric.title} className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

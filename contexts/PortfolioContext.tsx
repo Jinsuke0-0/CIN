@@ -5,7 +5,9 @@ import { useNotes } from '@/lib/hooks';
 
 // 1. Define the shape of the context data
 interface PerformanceMetrics {
-  totalTradeVolume: number;
+  totalBuyVolume: number;
+  totalSellVolume: number;
+  averageTradeSize: number;
   totalTrades: number;
 }
 
@@ -24,28 +26,57 @@ interface PortfolioProviderProps {
 
 export function PortfolioProvider({ children }: PortfolioProviderProps) {
   const { notes } = useNotes();
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({ totalTradeVolume: 0, totalTrades: 0 });
+  const [metrics, setMetrics] = useState<PerformanceMetrics>({ 
+    totalBuyVolume: 0, 
+    totalSellVolume: 0, 
+    averageTradeSize: 0, 
+    totalTrades: 0 
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("--- Portfolio Calculation Started ---");
     setLoading(true);
 
     let totalTrades = 0;
-    let totalTradeVolume = 0;
+    let totalBuyVolume = 0;
+    let totalSellVolume = 0;
+
+    console.log("Raw notes data:", notes);
 
     notes.forEach(note => {
-      if (!note.trades) return;
+      if (!note.trades || note.trades.length === 0) return;
+      
+      console.log(`Processing trades for note: "${note.title}"`);
       totalTrades += note.trades.length;
+
       note.trades.forEach(trade => {
+        console.log("  - Processing trade:", trade);
         const amount = parseFloat(trade.amount);
         const price = parseFloat(trade.price);
+
         if (!isNaN(amount) && !isNaN(price)) {
-          totalTradeVolume += amount * price;
+          const volume = amount * price;
+          console.log(`    > Calculated volume: ${amount} * ${price} = ${volume}`);
+          if (trade.type === 'buy') {
+            totalBuyVolume += volume;
+          } else {
+            totalSellVolume += volume;
+          }
+        } else {
+          console.warn("    > Skipping trade due to invalid amount or price.", { amount, price });
         }
       });
     });
 
-    setMetrics({ totalTrades, totalTradeVolume });
+    const totalTradeVolume = totalBuyVolume + totalSellVolume;
+    const averageTradeSize = totalTrades > 0 ? totalTradeVolume / totalTrades : 0;
+
+    const finalMetrics = { totalBuyVolume, totalSellVolume, averageTradeSize, totalTrades };
+    console.log("Final calculated metrics:", finalMetrics);
+    console.log("--- Portfolio Calculation Finished ---");
+
+    setMetrics(finalMetrics);
     setLoading(false);
 
   }, [notes]);
