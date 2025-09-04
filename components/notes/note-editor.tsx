@@ -57,12 +57,17 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       price: "",
       date: new Date().toISOString().split("T")[0],
       notes: "",
+      confirmed: false, // Add this line
     }
     setTrades([...trades, newTrade])
   }
 
   const updateTrade = (id: number, field: string, value: string) => {
     setTrades(trades.map((trade) => (trade.id === id ? { ...trade, [field]: value } : trade)))
+  }
+
+  const handleConfirmTrade = (id: number) => {
+    setTrades(trades.map((trade) => (trade.id === id ? { ...trade, confirmed: true } : trade)))
   }
 
   const removeTrade = (id: number) => {
@@ -81,7 +86,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       category,
       tags,
       is_public,
-      trades,
+      trades: trades.filter(trade => trade.confirmed), // Only confirmed trades are sent
     }
     onSave(noteData)
   }
@@ -210,7 +215,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           ) : (
             <div className="space-y-4">
               {trades.map((trade) => (
-                <div key={trade.id} className="p-4 border border-border rounded-lg">
+                <div key={trade.id} className={`p-4 border rounded-lg ${trade.confirmed ? "border-green-500 bg-green-500/10" : "border-border"}`}>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                       <label className="text-xs text-muted-foreground">Symbol</label>
@@ -219,11 +224,12 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                         onChange={(e) => updateTrade(trade.id, "symbol", e.target.value)}
                         placeholder="BTC"
                         className="bg-input border-border"
+                        disabled={trade.confirmed} // Disable inputs if confirmed
                       />
                     </div>
                     <div>
                       <label className="text-xs text-muted-foreground">Type</label>
-                      <Select value={trade.type} onValueChange={(value) => updateTrade(trade.id, "type", value)}>
+                      <Select value={trade.type} onValueChange={(value) => updateTrade(trade.id, "type", value)} disabled={trade.confirmed}>
                         <SelectTrigger className="bg-input border-border">
                           <SelectValue />
                         </SelectTrigger>
@@ -250,6 +256,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                         onChange={(e) => updateTrade(trade.id, "amount", e.target.value)}
                         placeholder="0.1"
                         className="bg-input border-border"
+                        disabled={trade.confirmed} // Disable inputs if confirmed
                       />
                     </div>
                     <div>
@@ -259,6 +266,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                         onChange={(e) => updateTrade(trade.id, "price", e.target.value)}
                         placeholder="42000"
                         className="bg-input border-border"
+                        disabled={trade.confirmed} // Disable inputs if confirmed
                       />
                     </div>
                     <div>
@@ -268,6 +276,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                         value={trade.date}
                         onChange={(e) => updateTrade(trade.id, "date", e.target.value)}
                         className="bg-input border-border"
+                        disabled={trade.confirmed} // Disable inputs if confirmed
                       />
                     </div>
                   </div>
@@ -277,7 +286,13 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       onChange={(e) => updateTrade(trade.id, "notes", e.target.value)}
                       placeholder="Trade notes..."
                       className="bg-input border-border flex-1 mr-2"
+                      disabled={trade.confirmed} // Disable inputs if confirmed
                     />
+                    {!trade.confirmed && (
+                      <Button variant="outline" size="sm" onClick={() => handleConfirmTrade(trade.id)} className="mr-2">
+                        Confirm
+                      </Button>
+                    )}
                     <Button variant="destructive" size="sm" onClick={() => removeTrade(trade.id)}>
                       Delete
                     </Button>

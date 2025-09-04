@@ -6,7 +6,7 @@ export interface Trade {
   amount: string
   price: string
   date: string
-  notes: string
+  confirmed: boolean; // Add this line
 }
 
 export interface Note {
