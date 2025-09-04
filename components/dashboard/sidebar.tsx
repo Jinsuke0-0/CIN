@@ -1,24 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  LayoutDashboard,
-  FileText,
-  Users,
-  PlusCircle,
-  BarChart3,
-  LogOut,
-  FileSearch,
-  Newspaper,
-  Shield,
-  Calendar,
-  ChevronDown,
-} from "lucide-react"
-import { useNotes } from "@/lib/hooks"
+import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar } from "lucide-react"
 
 interface SidebarProps {
   className?: string
@@ -27,18 +13,10 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { notes } = useNotes()
-  const [isNotesOpen, setIsNotesOpen] = useState(true)
-
-  const recentNotes = useMemo(() => {
-    return [...notes]
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, 5)
-  }, [notes])
 
   const cinPrivateNav = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Investment Notes", href: "/notes", icon: FileText, isCollapsible: true },
+    { name: "Investment Notes", href: "/notes", icon: FileText },
     { name: "Performance", href: "/analytics", icon: BarChart3 },
   ]
 
@@ -77,38 +55,15 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="space-y-1">
             <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Private</h3>
             {cinPrivateNav.map((item) => (
-              <div key={item.name}>
+              <Link href={item.href} key={item.name} passHref>
                 <Button
                   variant={pathname.startsWith(item.href) ? "secondary" : "ghost"}
-                  className="w-full justify-between"
-                  onClick={() => item.isCollapsible && setIsNotesOpen(!isNotesOpen)}
+                  className="w-full justify-start"
                 >
-                  <Link href={item.href} className="flex items-center">
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.name}
-                  </Link>
-                  {item.isCollapsible && (
-                    <ChevronDown
-                      className={cn("h-4 w-4 transition-transform", isNotesOpen && "rotate-180")}
-                    />
-                  )}
+                  <item.icon className="mr-2 h-4 w-4" />
+                  {item.name}
                 </Button>
-                {item.isCollapsible && isNotesOpen && (
-                  <div className="pl-8 pr-2 py-1 space-y-1">
-                    {recentNotes.map((note) => (
-                      <Link href={`/notes?noteId=${note.id}`} key={note.id} passHref>
-                        <Button
-                          variant={pathname.includes(note.id) ? "secondary" : "ghost"}
-                          className="w-full justify-start h-8 text-xs truncate"
-                          title={note.title}
-                        >
-                          {note.title}
-                        </Button>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              </Link>
             ))}
           </div>
         </div>

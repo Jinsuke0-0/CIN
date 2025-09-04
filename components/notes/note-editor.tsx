@@ -8,17 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Save, Tag, DollarSign, TrendingUp, TrendingDown } from "lucide-react"
+import { type Note, type Trade } from "@/lib/initial-data"
 
 interface NoteEditorProps {
-  note?: {
-    id?: string
-    title: string
-    content: string
-    category: string
-    tags: string[]
-    isPublic: boolean
-  }
-  onSave: (note: any) => void
+  note?: Partial<Note>
+  onSave: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes'>) => void
   onCancel: () => void
 }
 
@@ -29,7 +23,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [tags, setTags] = useState<string[]>(note?.tags || [])
   const [newTag, setNewTag] = useState("")
   const [isPublic, setIsPublic] = useState(note?.isPublic || false)
-  const [trades, setTrades] = useState<any[]>([])
+  const [trades, setTrades] = useState<Trade[]>(note?.trades || [])
 
   const categories = [
     "Technical Analysis",
@@ -55,7 +49,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   }
 
   const addTrade = () => {
-    const newTrade = {
+    const newTrade: Trade = {
       id: Date.now(),
       symbol: "",
       type: "buy",
@@ -82,15 +76,12 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
     }
 
     const noteData = {
-      id: note?.id,
       title,
       content,
       category,
       tags,
       isPublic,
       trades,
-      createdAt: note?.id ? undefined : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     }
     onSave(noteData)
   }

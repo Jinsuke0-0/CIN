@@ -26,9 +26,10 @@ interface NotesListProps {
   onCreateNote: () => void
   onEditNote: (note: Note) => void
   onDeleteNote: (noteId: string) => void
+  onViewNote: (note: Note) => void
 }
 
-export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: NotesListProps) {
+export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onViewNote }: NotesListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("updated")
@@ -156,7 +157,10 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <CardTitle className="text-card-foreground hover:text-primary cursor-pointer">
+                    <CardTitle
+                      className="text-card-foreground hover:text-primary cursor-pointer"
+                      onClick={() => onViewNote(note)}
+                    >
                       {note.title}
                     </CardTitle>
                     <div className="flex items-center gap-2">

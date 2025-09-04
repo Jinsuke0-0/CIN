@@ -37,29 +37,31 @@ export function RecentNotes() {
             <p className="text-muted-foreground text-center py-4">No notes yet.</p>
           ) : (
             recentNotes.map((note) => (
-              <div key={note.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
-                <div className="flex items-start gap-3">
-                  <FileText className="h-5 w-5 text-primary mt-1" />
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-card-foreground">{note.title}</h4>
-                    <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={note.isPublic ? "default" : "secondary"}>{note.isPublic ? "Public" : "Private"}</Badge>
-                      <span className="text-xs text-muted-foreground">{formatDate(note.updatedAt)}</span>
+              <Link href={`/notes?noteId=${note.id}`} key={note.id} passHref>
+                <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 cursor-pointer">
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-5 w-5 text-primary mt-1" />
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-medium text-card-foreground">{note.title}</h4>
+                      <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={note.isPublic ? "default" : "secondary"}>{note.isPublic ? "Public" : "Private"}</Badge>
+                        <span className="text-xs text-muted-foreground">{formatDate(note.updatedAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      {note.views}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-3 w-3" />
+                      {note.likes}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    {note.views}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Heart className="h-3 w-3" />
-                    {note.likes}
-                  </div>
-                </div>
-              </div>
+              </Link>
             ))
           )}
         </div>

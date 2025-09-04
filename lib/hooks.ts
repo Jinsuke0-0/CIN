@@ -40,7 +40,7 @@ export function useNotes() {
   const addNote = useCallback((noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes'>) => {
     setNotes((prevNotes) => {
       const newNote: Note = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         ...noteData,
         views: 0,
         likes: 0,

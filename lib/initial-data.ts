@@ -1,4 +1,14 @@
 
+export interface Trade {
+  id: number
+  symbol: string
+  type: "buy" | "sell"
+  amount: string
+  price: string
+  date: string
+  notes: string
+}
+
 export interface Note {
   id: string
   title: string
@@ -10,6 +20,7 @@ export interface Note {
   likes: number
   createdAt: string
   updatedAt: string
+  trades?: Trade[]
 }
 
 export const initialNotes: Note[] = [
@@ -24,6 +35,26 @@ export const initialNotes: Note[] = [
     likes: 12,
     createdAt: "2024-01-15T10:00:00Z",
     updatedAt: "2024-01-15T10:00:00Z",
+    trades: [
+      {
+        id: 1,
+        symbol: "BTC",
+        type: "buy",
+        amount: "0.5",
+        price: "42000",
+        date: "2024-01-15",
+        notes: "長期保有目的で購入",
+      },
+      {
+        id: 2,
+        symbol: "BTC",
+        type: "sell",
+        amount: "0.1",
+        price: "45000",
+        date: "2024-01-20",
+        notes: "短期的な利益確定",
+      },
+    ],
   },
   {
     id: "2",
@@ -36,6 +67,7 @@ export const initialNotes: Note[] = [
     likes: 0,
     createdAt: "2024-01-12T14:30:00Z",
     updatedAt: "2024-01-12T14:30:00Z",
+    trades: [],
   },
   {
     id: "3",
@@ -48,5 +80,6 @@ export const initialNotes: Note[] = [
     likes: 28,
     createdAt: "2024-01-10T09:15:00Z",
     updatedAt: "2024-01-10T09:15:00Z",
+    trades: [],
   },
 ]
