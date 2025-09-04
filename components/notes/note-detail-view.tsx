@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, Eye, Heart, Tag, TrendingDown, TrendingUp } from "lucide-react"
 import { type Note } from "@/lib/initial-data"
 
+// Helper to format numbers with commas
+const formatNumberWithCommas = (value: string) => {
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  return num.toLocaleString('en-US'); // Formats with commas
+};
+
 interface NoteDetailViewProps {
   note: Note
   onBack: () => void
@@ -103,7 +110,7 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
                   </div>
                   <div className="text-left md:text-right">
                     <p className="font-mono text-card-foreground">
-                      {trade.amount} @ ${trade.price}
+                      {trade.amount} @ ${formatNumberWithCommas(trade.price)}
                     </p>
                     <p className="text-sm text-muted-foreground">Total: ${(parseFloat(trade.amount) * parseFloat(trade.price)).toFixed(2)}</p>
                   </div>

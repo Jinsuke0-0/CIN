@@ -10,6 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save, Tag, DollarSign, TrendingUp, TrendingDown } from "lucide-react"
 import { type Note, type Trade } from "@/lib/initial-data"
 
+// Helper to format numbers with commas
+const formatNumberWithCommas = (value: string) => {
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  return num.toLocaleString('en-US'); // Formats with commas
+};
+
 interface NoteEditorProps {
   note?: Partial<Note>
   onSave: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes'>) => void
@@ -262,8 +269,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                     <div>
                       <label className="text-xs text-muted-foreground">Price</label>
                       <Input
-                        value={trade.price}
-                        onChange={(e) => updateTrade(trade.id, "price", e.target.value)}
+                        value={formatNumberWithCommas(trade.price)}
+                        onChange={(e) => updateTrade(trade.id, "price", e.target.value.replace(/,/g, ''))}
                         placeholder="42000"
                         className="bg-input border-border"
                         disabled={trade.confirmed} // Disable inputs if confirmed
@@ -289,7 +296,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       disabled={trade.confirmed} // Disable inputs if confirmed
                     />
                     {!trade.confirmed && (
-                      <Button variant="outline" size="sm" onClick={() => handleConfirmTrade(trade.id)} className="mr-2">
+                      <Button size="sm" onClick={() => handleConfirmTrade(trade.id)} className="mr-2 bg-blue-500 text-white hover:bg-blue-600">
                         Confirm
                       </Button>
                     )}

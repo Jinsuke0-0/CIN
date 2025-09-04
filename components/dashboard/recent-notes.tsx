@@ -7,9 +7,22 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, Eye, Heart } from "lucide-react"
 import { useNotes } from "@/lib/hooks"
+import { type Note, type Trade } from "@/lib/initial-data"
 
 export function RecentNotes() {
   const { notes } = useNotes()
+
+  const getTradeTypeSummary = (trades: Trade[] | undefined) => {
+    if (!trades || trades.length === 0) return null;
+
+    const hasBuy = trades.some(trade => trade.type === 'buy');
+    const hasSell = trades.some(trade => trade.type === 'sell');
+
+    if (hasBuy && hasSell) return "Buy/Sell";
+    if (hasBuy) return "Buy";
+    if (hasSell) return "Sell";
+    return null;
+  };
 
   const recentNotes = useMemo(() => {
     // Defensive filtering: ensure notes have valid IDs and are unique.
@@ -53,6 +66,9 @@ export function RecentNotes() {
                         <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
                         <div className="flex items-center gap-2">
                           <Badge variant={note.is_public ? "default" : "secondary"}>{note.is_public ? "Public" : "Private"}</Badge>
+                          {getTradeTypeSummary(note.trades) && (
+                            <Badge variant="outline">{getTradeTypeSummary(note.trades)}</Badge>
+                          )}
                           <span className="text-xs text-muted-foreground">Created: {formatDate(note.createdAt)}</span>
                           <span className="text-xs text-muted-foreground">Updated: {formatDate(note.updatedAt)}</span>
                         </div>

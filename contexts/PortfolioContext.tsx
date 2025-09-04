@@ -52,6 +52,7 @@ export function PortfolioProvider({ children }: PortfolioProviderProps) {
 
       note.trades.forEach(trade => {
         console.log("  - Processing trade:", trade);
+        console.log("  - Trade type:", trade.type); // Add this line for debugging
         const amount = parseFloat(trade.amount);
         const price = parseFloat(trade.price);
 

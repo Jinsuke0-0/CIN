@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileText, Search, Filter, Eye, Heart, Edit, Trash2, Plus } from "lucide-react"
+import { type Trade } from "@/lib/initial-data"
 
 interface Note {
   id: string
@@ -19,6 +20,7 @@ interface Note {
   likes: number
   createdAt: string
   updatedAt: string
+  trades?: Trade[] // Add trades to Note interface
 }
 
 interface NotesListProps {
@@ -46,6 +48,18 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
     "NFT",
     "Other",
   ]
+
+  const getTradeTypeSummary = (trades: Trade[] | undefined) => {
+    if (!trades || trades.length === 0) return null;
+
+    const hasBuy = trades.some(trade => trade.type === 'buy');
+    const hasSell = trades.some(trade => trade.type === 'sell');
+
+    if (hasBuy && hasSell) return "Buy/Sell";
+    if (hasBuy) return "Buy";
+    if (hasSell) return "Sell";
+    return null;
+  };
 
   const uniqueNotes = useMemo(() => {
     const validNotes = notes.filter(note => note && note.id);
@@ -173,6 +187,9 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{note.category}</Badge>
                       <Badge variant={note.is_public ? "default" : "outline"}>{note.is_public ? "Public" : "Private"}</Badge>
+                      {getTradeTypeSummary(note.trades) && (
+                        <Badge variant="outline">{getTradeTypeSummary(note.trades)}</Badge>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

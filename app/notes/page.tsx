@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { NotesList } from "@/components/notes/notes-list"
 import { NoteEditor } from "@/components/notes/note-editor"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -15,6 +15,7 @@ function NotesPageContent() {
   const [editingNote, setEditingNote] = useState<Note | null>(null)
   const [viewingNote, setViewingNote] = useState<Note | null>(null)
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   useEffect(() => {
     const noteId = searchParams.get("noteId")
@@ -59,7 +60,7 @@ function NotesPageContent() {
     } else {
       await addNote(noteData)
     }
-    setCurrentView("list")
+    router.push("/notes") // Redirect to notes list page
   }
 
   const handleDeleteNote = (noteId: string) => {

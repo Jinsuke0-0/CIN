@@ -112,7 +112,7 @@ export function useNotes() {
       .single();
 
     if (updateError) {
-      console.error("Error updating note:", updateError);
+      console.error("Error updating note:", JSON.stringify(updateError, null, 2));
       setError(updateError.message);
     } else if (data) {
       setNotes((prevNotes) =>
