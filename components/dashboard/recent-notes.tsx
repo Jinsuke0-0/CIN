@@ -1,37 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, Eye, Heart } from "lucide-react"
-
-interface Note {
-  id: string
-  title: string
-  content: string
-  category: string
-  tags: string[]
-  isPublic: boolean
-  views: number
-  likes: number
-  createdAt: string
-  updatedAt: string
-}
+import { useNotes } from "@/lib/hooks"
 
 export function RecentNotes() {
-  const [recentNotes, setRecentNotes] = useState<Note[]>([])
+  const { notes } = useNotes()
 
-  useEffect(() => {
-    const storedNotes = localStorage.getItem("notes")
-    if (storedNotes) {
-      const notes: Note[] = JSON.parse(storedNotes)
-      // Sort by updatedAt and take the top 3
-      const sortedNotes = notes.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      setRecentNotes(sortedNotes.slice(0, 3))
-    }
-  }, [])
+  const recentNotes = useMemo(() => {
+    return [...notes]
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 3)
+  }, [notes])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {

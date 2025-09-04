@@ -178,8 +178,8 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote }: Not
                 <CardDescription className="mb-4 line-clamp-2">{note.content}</CardDescription>
 
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {note.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
+                  {note.tags.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
                       {tag}
                     </Badge>
                   ))}
