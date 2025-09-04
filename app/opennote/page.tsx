@@ -9,7 +9,7 @@ export default function OpenNotePage() {
   const { notes } = useNotes()
 
   const publicNotes = useMemo(() => {
-    return notes.filter((note) => note.isPublic)
+    return notes.filter((note) => note.is_public)
   }, [notes])
 
   return (

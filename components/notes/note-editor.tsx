@@ -22,7 +22,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [category, setCategory] = useState(note?.category || "")
   const [tags, setTags] = useState<string[]>(note?.tags || [])
   const [newTag, setNewTag] = useState("")
-  const [isPublic, setIsPublic] = useState(note?.isPublic || false)
+  const [is_public, setIsPublic] = useState(note?.is_public || false)
   const [trades, setTrades] = useState<Trade[]>(note?.trades || [])
 
   const categories = [
@@ -70,7 +70,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   }
 
   const handleSave = () => {
-    if (isPublic && content.trim() === '') {
+    if (is_public && content.trim() === '') {
       alert('Note Content is required for public notes.');
       return;
     }
@@ -80,7 +80,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       content,
       category,
       tags,
-      isPublic,
+      is_public,
       trades,
     }
     onSave(noteData)
@@ -138,7 +138,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <div>
               <label className="text-sm font-medium text-card-foreground mb-2 block">Visibility</label>
               <Select
-                value={isPublic ? "public" : "private"}
+                value={is_public ? "public" : "private"}
                 onValueChange={(value) => setIsPublic(value === "public")}
               >
                 <SelectTrigger className="bg-input border-border">
@@ -179,7 +179,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       </Card>
 
       {/* Note Content */}
-      {isPublic && (
+      {is_public && (
         <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-card-foreground">Note Content</CardTitle>

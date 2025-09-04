@@ -52,7 +52,7 @@ export function RecentNotes() {
                         <h4 className="text-sm font-medium text-card-foreground">{note.title}</h4>
                         <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
                         <div className="flex items-center gap-2">
-                          <Badge variant={note.isPublic ? "default" : "secondary"}>{note.isPublic ? "Public" : "Private"}</Badge>
+                          <Badge variant={note.is_public ? "default" : "secondary"}>{note.is_public ? "Public" : "Private"}</Badge>
                           <span className="text-xs text-muted-foreground">{formatDate(note.updatedAt)}</span>
                         </div>
                       </div>

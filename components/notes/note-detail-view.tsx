@@ -54,8 +54,8 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
                 <Badge variant="secondary">{note.category}</Badge>
               </div>
               <div className="flex items-center gap-1">
-                <Badge variant={note.isPublic ? "default" : "outline"}>
-                  {note.isPublic ? "Public" : "Private"}
+                <Badge variant={note.is_public ? "default" : "outline"}>
+                  {note.is_public ? "Public" : "Private"}
                 </Badge>
               </div>
             </div>

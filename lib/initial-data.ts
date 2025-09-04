@@ -11,11 +11,12 @@ export interface Trade {
 
 export interface Note {
   id: string
+  user_id: string; // Changed from userId to user_id
   title: string
   content: string
   category: string
   tags: string[]
-  isPublic: boolean
+    is_public: boolean; // Changed from isPublic to is_public
   views: number
   likes: number
   createdAt: string
@@ -30,7 +31,7 @@ export const initialNotes: Note[] = [
     content: "ビットコインの技術分析と今四半期の投資戦略について詳細に分析...",
     category: "技術分析",
     tags: ["BTC", "テクニカル分析", "Q1戦略"],
-    isPublic: true,
+    is_public: true,
     views: 234,
     likes: 12,
     createdAt: "2024-01-15T10:00:00Z",
@@ -62,7 +63,7 @@ export const initialNotes: Note[] = [
     content: "イーサリアム2.0ステーキングの最適化手法について...",
     category: "DeFi",
     tags: ["ETH", "ステーキング", "DeFi"],
-    isPublic: false,
+    is_public: false,
     views: 0,
     likes: 0,
     createdAt: "2024-01-12T14:30:00Z",
@@ -75,7 +76,7 @@ export const initialNotes: Note[] = [
     content: "主要DeFiプラットフォームの利回り比較と投資戦略...",
     category: "ファンダメンタル分析",
     tags: ["DeFi", "利回り", "比較分析"],
-    isPublic: true,
+    is_public: true,
     views: 456,
     likes: 28,
     createdAt: "2024-01-10T09:15:00Z",

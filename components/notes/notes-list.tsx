@@ -14,7 +14,7 @@ interface Note {
   content: string
   category: string
   tags: string[]
-  isPublic: boolean
+  is_public: boolean
   views: number
   likes: number
   createdAt: string
@@ -172,7 +172,7 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{note.category}</Badge>
-                      <Badge variant={note.isPublic ? "default" : "outline"}>{note.isPublic ? "Public" : "Private"}</Badge>
+                      <Badge variant={note.is_public ? "default" : "outline"}>{note.is_public ? "Public" : "Private"}</Badge>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
