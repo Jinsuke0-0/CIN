@@ -1,62 +1,59 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, Target, Shield, Zap, Calendar } from "lucide-react"
+import { usePortfolio } from "@/contexts/PortfolioContext"
+import { DollarSign, Activity, AlertCircle } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Helper to format currency
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+}
 
 export function PerformanceMetrics() {
-  const metrics = [
+  const { metrics, loading } = usePortfolio();
+
+  if (loading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <Card key={index} className="bg-card border-border">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <Skeleton className="h-4 w-2/3" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-1/2 mb-2" />
+              <Skeleton className="h-3 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
+  const displayMetrics = [
     {
-      title: "Total Return (ROI)",
-      value: "+24.21%",
-      description: "Total return since inception",
-      icon: TrendingUp,
-      color: "text-chart-1",
-      bgColor: "bg-chart-1/10",
-    },
-    {
-      title: "Annualized Return",
-      value: "+18.45%",
-      description: "Annualized return",
-      icon: Calendar,
-      color: "text-chart-1",
-      bgColor: "bg-chart-1/10",
-    },
-    {
-      title: "Sharpe Ratio",
-      value: "1.34",
-      description: "Risk-adjusted return",
-      icon: Target,
+      title: "Total Trade Volume",
+      value: formatCurrency(metrics.totalTradeVolume),
+      description: "Sum of (Amount * Price) for all trades",
+      icon: DollarSign,
       color: "text-primary",
       bgColor: "bg-primary/10",
     },
     {
-      title: "Max Drawdown",
-      value: "-12.8%",
-      description: "Maximum decline from peak",
-      icon: TrendingDown,
-      color: "text-chart-3",
-      bgColor: "bg-chart-3/10",
-    },
-    {
-      title: "Volatility",
-      value: "28.5%",
-      description: "Magnitude of price fluctuations",
-      icon: Zap,
-      color: "text-chart-2",
-      bgColor: "bg-chart-2/10",
-    },
-    {
-      title: "Win Rate",
-      value: "67.3%",
-      description: "Percentage of profitable trades",
-      icon: Shield,
-      color: "text-chart-1",
-      bgColor: "bg-chart-1/10",
+      title: "Total Trades",
+      value: metrics.totalTrades,
+      description: "Total number of buy/sell records",
+      icon: Activity,
+      color: "text-amber-500",
+      bgColor: "bg-amber-500/10",
     },
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {metrics.map((metric, index) => (
-        <Card key={index} className="bg-card border-border">
+    <div className="grid gap-4 md:grid-cols-2">
+      {displayMetrics.map((metric) => (
+        <Card key={metric.title} className="bg-card border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-card-foreground">{metric.title}</CardTitle>
             <div className={`p-2 rounded-lg ${metric.bgColor}`}>
