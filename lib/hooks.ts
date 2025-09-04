@@ -21,7 +21,7 @@ export function useNotes() {
       setError(null);
       const { data, error } = await supabase
         .from('notes')
-        .select('*')
+        .select('*, trades(*)') // Select trades along with the note
         .eq('user_id', userId); // Filter by user_id
 
       if (error) {

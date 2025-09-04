@@ -207,6 +207,7 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
                       {note.likes}
                     </div>
                   </div>
+                  <div>Created: {formatDate(note.createdAt)}</div>
                   <div>Updated: {formatDate(note.updatedAt)}</div>
                 </div>
               </CardContent>

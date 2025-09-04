@@ -20,7 +20,7 @@ export function RecentNotes() {
 
     return [...uniqueNotes]
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, 3)
+      .slice(0, 5)
   }, [notes])
 
   const formatDate = (dateString: string) => {
@@ -53,7 +53,8 @@ export function RecentNotes() {
                         <p className="text-xs text-muted-foreground">{note.content.substring(0, 50)}...</p>
                         <div className="flex items-center gap-2">
                           <Badge variant={note.is_public ? "default" : "secondary"}>{note.is_public ? "Public" : "Private"}</Badge>
-                          <span className="text-xs text-muted-foreground">{formatDate(note.updatedAt)}</span>
+                          <span className="text-xs text-muted-foreground">Created: {formatDate(note.createdAt)}</span>
+                          <span className="text-xs text-muted-foreground">Updated: {formatDate(note.updatedAt)}</span>
                         </div>
                       </div>
                     </div>

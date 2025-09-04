@@ -48,7 +48,11 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
             <div className="flex items-center gap-4 mt-2 text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(note.updatedAt)}</span>
+                <span>Created: {formatDate(note.createdAt)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>Updated: {formatDate(note.updatedAt)}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Badge variant="secondary">{note.category}</Badge>
