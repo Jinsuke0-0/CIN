@@ -7,8 +7,20 @@ import { PortfolioOverview } from "@/components/dashboard/portfolio-overview"
 import { RecentNotes } from "@/components/dashboard/recent-notes"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+interface MarketCoin {
+  id: string
+  symbol: string
+  name: string
+  image: string
+  current_price: number
+  price_change_percentage_24h: number
+}
+
 export default function DashboardPage() {
   const [walletAddress, setWalletAddress] = useState("")
+  const [marketData, setMarketData] = useState<MarketCoin[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -18,6 +30,25 @@ export default function DashboardPage() {
     } else {
       router.push("/")
     }
+
+    const fetchMarketData = async () => {
+      try {
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false"
+        )
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.statusText}`)
+        }
+        const data: MarketCoin[] = await response.json()
+        setMarketData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMarketData()
   }, [router])
 
   return (
@@ -60,29 +91,37 @@ export default function DashboardPage() {
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="text-card-foreground">Market Overview</CardTitle>
-                  <CardDescription>Price movements of major cryptocurrencies</CardDescription>
+                  <CardDescription>Top 10 cryptocurrencies by market cap</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[
-                      { symbol: "BTC", name: "Bitcoin", price: 42150, change: 2.34 },
-                      { symbol: "ETH", name: "Ethereum", price: 2580, change: -1.23 },
-                      { symbol: "BNB", name: "BNB", price: 315, change: 0.87 },
-                    ].map((coin) => (
-                      <div key={coin.symbol} className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium text-card-foreground">{coin.symbol}</div>
-                          <div className="text-sm text-muted-foreground">{coin.name}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium text-card-foreground">${coin.price.toLocaleString()}</div>
-                          <div className={`text-sm ${coin.change >= 0 ? "text-chart-1" : "text-chart-3"}`}>
-                            {coin.change >= 0 ? "+" : ""}
-                            {coin.change}%
+                    {loading ? (
+                      <p>Loading market data...</p>
+                    ) : error ? (
+                      <p className="text-red-500">Error: {error}</p>
+                    ) : (
+                      marketData.map((coin) => (
+                        <div key={coin.id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img src={coin.image} alt={coin.name} className="h-8 w-8" />
+                            <div>
+                              <div className="font-medium text-card-foreground">{coin.symbol.toUpperCase()}</div>
+                              <div className="text-sm text-muted-foreground">{coin.name}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium text-card-foreground">
+                              ${coin.current_price.toLocaleString()}
+                            </div>
+                            <div
+                              className={`text-sm ${coin.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}`}>
+                              {coin.price_change_percentage_24h >= 0 ? "+" : ""}
+                              {coin.price_change_percentage_24h.toFixed(2)}%
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>
