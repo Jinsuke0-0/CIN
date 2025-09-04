@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { TrendingUp, Wallet, FileText, BarChart3, Users, Shield } from "lucide-react"
 import { WalletConnect } from "@/components/auth/wallet-connect"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { upsertUser } from "@/lib/user"
 
 export default function HomePage() {
   const [account, setAccount] = useState<string | null>(null)
@@ -20,10 +21,18 @@ export default function HomePage() {
     }
   }, [])
 
-  const handleConnect = (address: string) => {
+  const handleConnect = async (address: string) => {
     setAccount(address)
     localStorage.setItem("walletAddress", address)
     setIsDialogOpen(false)
+    
+    // Upsert user data to Supabase
+    const { data: user, error } = await upsertUser(address);
+    if (error) {
+      console.error("Failed to save user data:", error);
+      // Optionally handle the error, e.g., show a toast notification
+    }
+
     router.push("/dashboard")
   }
 
