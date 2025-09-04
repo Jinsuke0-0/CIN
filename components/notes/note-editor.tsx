@@ -168,8 +168,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
+              {tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
                   {tag} ×
                 </Badge>
               ))}

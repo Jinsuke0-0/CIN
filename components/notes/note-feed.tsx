@@ -1,23 +1,26 @@
 "use client"
 
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { type Note } from "@/lib/initial-data"
 
 interface NoteFeedProps {
   title: string
   subtitle: string
+  notes: Note[]
 }
 
-export function NoteFeed({ title, subtitle }: NoteFeedProps) {
-  // This is a placeholder for the actual note feed logic.
-  // In a real application, you would fetch notes from an API and render them here.
-  const notes = [
-    { id: 1, title: "My First Investment Note", content: "This is the content of my first investment note.", author: "John Doe", date: "2023-01-15", tags: ["Crypto", "Beginner", "Portfolio"] },
-    { id: 2, title: "Analyzing Bitcoin Performance", content: "A deep dive into Bitcoin's recent price movements.", author: "Jane Smith", date: "2023-02-20", tags: ["Bitcoin", "Analysis", "Market"] },
-    { id: 3, title: "Ethereum Staking Guide", content: "How to stake Ethereum and earn passive income.", author: "Peter Jones", date: "2023-03-10", tags: ["Ethereum", "Staking", "DeFi"] },
-  ]
+export function NoteFeed({ title, subtitle, notes }: NoteFeedProps) {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
 
   return (
     <div className="space-y-8">
@@ -30,25 +33,27 @@ export function NoteFeed({ title, subtitle }: NoteFeedProps) {
       <Separator className="bg-gray-700" />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {notes.map((note) => (
-          <Card key={note.id} className="flex flex-col bg-neutral-900 text-gray-100 border border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:border-primary hover:shadow-xl">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-xl font-semibold text-white">{note.title}</CardTitle>
-              <CardDescription className="text-xs text-gray-400">By {note.author} on {note.date}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow p-4 pt-0">
-              <p className="text-gray-400 line-clamp-3 text-sm">{note.content}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {note.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600">
-                    {tag}
-                  </Badge>
-                ))}
+          <Link href={`/notes?noteId=${note.id}`} key={note.id} passHref>
+            <Card className="flex flex-col bg-neutral-900 text-gray-100 border border-gray-700 rounded-lg overflow-hidden transition-all duration-200 hover:border-primary hover:shadow-xl h-full">
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-xl font-semibold text-white">{note.title}</CardTitle>
+                <CardDescription className="text-xs text-gray-400">Updated on {formatDate(note.updatedAt)}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow p-4 pt-0">
+                <p className="text-gray-400 line-clamp-3 text-sm">{note.content}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {note.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+              <div className="p-4 pt-0 mt-auto">
+                <Button variant="link" className="px-0 text-primary hover:text-primary/80">Read More</Button>
               </div>
-            </CardContent>
-            <div className="p-4 pt-0">
-              <Button variant="link" className="px-0 text-primary hover:text-primary/80">Read More</Button>
-            </div>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>
