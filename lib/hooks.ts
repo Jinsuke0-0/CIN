@@ -29,7 +29,13 @@ export function useNotes() {
         setError(error.message);
         setNotes([]);
       } else {
-        setNotes(data as Note[]);
+        const formattedNotes = data.map(note => ({
+          ...note,
+          createdAt: note.created_at,
+          updatedAt: note.updated_at,
+          is_public: note.is_public,
+        }));
+        setNotes(formattedNotes as Note[]);
       }
       setLoading(false);
     };

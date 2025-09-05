@@ -2,6 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
+import { usePortfolio } from '@/contexts/PortfolioContext'; // Import usePortfolio
+import { useEffect, useState } from 'react'; // Import useEffect and useState
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading state
 
 interface AssetData {
   name: string
@@ -11,16 +14,72 @@ interface AssetData {
 }
 
 export function AssetAllocation() {
-  const assetData: AssetData[] = [
-    { name: "Bitcoin (BTC)", value: 45000, percentage: 38.1, color: "hsl(var(--chart-2))" },
-    { name: "Ethereum (ETH)", value: 32000, percentage: 27.1, color: "hsl(var(--chart-4))" },
-    { name: "Binance Coin (BNB)", value: 18000, percentage: 15.3, color: "hsl(var(--chart-1))" },
-    { name: "Cardano (ADA)", value: 12000, percentage: 10.2, color: "hsl(var(--chart-5))" },
-    { name: "Solana (SOL)", value: 8000, percentage: 6.8, color: "hsl(var(--chart-3))" },
-    { name: "Other", value: 3000, percentage: 2.5, color: "hsl(var(--muted))" },
-  ]
+  const { allTrades, loading } = usePortfolio(); // Use the portfolio context
+  const [calculatedAssetData, setCalculatedAssetData] = useState<AssetData[]>([]);
+  const [totalValue, setTotalValue] = useState(0);
 
-  const totalValue = assetData.reduce((sum, asset) => sum + asset.value, 0)
+  const chartColors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+    "hsl(var(--chart-6))",
+    "hsl(var(--chart-7))",
+    "hsl(var(--chart-8))",
+  ];
+
+  useEffect(() => {
+    if (!loading && allTrades) {
+      const holdings: { [key: string]: { amount: number; cost: number } } = {};
+
+      allTrades.forEach(trade => {
+        const amount = parseFloat(trade.amount);
+        const price = parseFloat(trade.price);
+
+        if (!isNaN(amount) && !isNaN(price)) {
+          if (!holdings[trade.symbol]) {
+            holdings[trade.symbol] = { amount: 0, cost: 0 };
+          }
+
+          if (trade.type === 'buy') {
+            holdings[trade.symbol].amount += amount;
+            holdings[trade.symbol].cost += amount * price;
+          } else if (trade.type === 'sell') {
+            holdings[trade.symbol].amount -= amount;
+            holdings[trade.symbol].cost -= amount * price; // Subtract cost for sells
+          }
+        }
+      });
+
+      let currentTotalValue = 0;
+      const newAssetData: AssetData[] = [];
+      let colorIndex = 0;
+
+      for (const symbol in holdings) {
+        if (holdings[symbol].amount > 0) { // Only include positive holdings
+          const totalCost = holdings[symbol].cost;
+          currentTotalValue += totalCost;
+          newAssetData.push({
+            name: `${symbol}`,
+            value: totalCost,
+            percentage: 0,
+            color: chartColors[colorIndex % chartColors.length],
+          });
+          colorIndex++;
+        }
+      }
+
+      // Calculate percentages
+      const finalAssetData = newAssetData.map(asset => ({
+        ...asset,
+        percentage: currentTotalValue > 0 ? (asset.value / currentTotalValue) * 100 : 0,
+      }));
+
+      setCalculatedAssetData(finalAssetData);
+      setTotalValue(currentTotalValue);
+    }
+  }, [allTrades, loading]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -45,7 +104,8 @@ export function AssetAllocation() {
     return null
   }
 
-  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percentage }: any) => {
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    const percentage = percent * 100;
     if (percentage < 5) return null // Don't display for less than 5%
 
     const RADIAN = Math.PI / 180
@@ -81,7 +141,7 @@ export function AssetAllocation() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={assetData}
+                  data={calculatedAssetData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -90,7 +150,7 @@ export function AssetAllocation() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {assetData.map((entry, index) => (
+                  {calculatedAssetData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -102,7 +162,7 @@ export function AssetAllocation() {
           {/* Asset List */}
           <div className="space-y-4">
             <div className="text-lg font-semibold text-card-foreground mb-4">Total Assets: {formatCurrency(totalValue)}</div>
-            {assetData.map((asset, index) => (
+            {calculatedAssetData.map((asset, index) => (
               <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/20">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 rounded-full" style={{ backgroundColor: asset.color }} />

@@ -1,7 +1,7 @@
 "use client"
 
 import { Sidebar } from "@/components/dashboard/sidebar"
-import { PortfolioChart } from "@/components/analytics/portfolio-chart"
+
 import { AssetAllocation } from "@/components/analytics/asset-allocation"
 import { PerformanceMetrics } from "@/components/analytics/performance-metrics"
 import { PortfolioProvider } from "@/contexts/PortfolioContext"
@@ -30,8 +30,7 @@ export default function AnalyticsPage() {
               {/* Performance Metrics */}
               <PerformanceMetrics />
 
-              {/* Portfolio Chart */}
-              <PortfolioChart />
+              
 
               {/* Asset Allocation */}
               <AssetAllocation />

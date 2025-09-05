@@ -14,6 +14,7 @@ interface PerformanceMetrics {
 interface PortfolioContextType {
   metrics: PerformanceMetrics;
   loading: boolean;
+  allTrades: Trade[]; // Add this line
 }
 
 // Create the context with a default value
@@ -82,11 +83,13 @@ export function PortfolioProvider({ children }: PortfolioProviderProps) {
 
   }, [notes]);
 
-  // Note: The other components (AssetAllocation, PortfolioChart) will now receive empty/default data 
-  // as we have removed holdings, chartData etc. to simplify.
+  // Collect all trades from all notes
+  const allTrades = notes.flatMap(note => note.trades || []);
+
   const value = {
     metrics,
     loading,
+    allTrades, // Pass all trades
     // Provide default empty values for other components that might use the context
     holdings: [],
     chartData: [],

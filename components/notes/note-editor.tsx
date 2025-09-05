@@ -226,13 +226,18 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                       <label className="text-xs text-muted-foreground">Symbol</label>
-                      <Input
-                        value={trade.symbol}
-                        onChange={(e) => updateTrade(trade.id, "symbol", e.target.value)}
-                        placeholder="BTC"
-                        className="bg-input border-border"
-                        disabled={trade.confirmed} // Disable inputs if confirmed
-                      />
+                      <Select value={trade.symbol} onValueChange={(value) => updateTrade(trade.id, "symbol", value)} disabled={trade.confirmed}>
+                        <SelectTrigger className="bg-input border-border">
+                          <SelectValue placeholder="Select Symbol" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {['BTC', 'ETH', 'XRP', 'ADA', 'SOL', 'DOGE'].map((symbol) => (
+                            <SelectItem key={symbol} value={symbol}>
+                              {symbol}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <label className="text-xs text-muted-foreground">Type</label>
@@ -271,7 +276,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       <Input
                         value={formatNumberWithCommas(trade.price)}
                         onChange={(e) => updateTrade(trade.id, "price", e.target.value.replace(/,/g, ''))}
-                        placeholder="42000"
+                        placeholder="42,000"
                         className="bg-input border-border"
                         disabled={trade.confirmed} // Disable inputs if confirmed
                       />
