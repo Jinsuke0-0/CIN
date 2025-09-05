@@ -129,19 +129,6 @@ export default function DashboardPage() {
     fetchMarketData()
   }, [connectWallet, router])
 
-  const mintTokens = async () => {
-    if (contract && signer) {
-      try {
-        const tx = await contract.mint(walletAddress, ethers.parseUnits("100", 18))
-        await tx.wait()
-        const balance = await contract.balanceOf(walletAddress)
-        setCinBalance(ethers.formatUnits(balance, 18))
-      } catch (error) {
-        console.error("Failed to mint tokens:", error)
-      }
-    }
-  }
-
   return (
     <PortfolioProvider>
       <div className="flex h-screen bg-background">
@@ -233,13 +220,10 @@ export default function DashboardPage() {
                   <CardDescription>Your CIN token balance and rewards</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">{cinBalance}</div>
                       <div className="text-sm text-muted-foreground">CIN Held</div>
-                    </div>
-                    <div className="text-center">
-                      <Button onClick={mintTokens} disabled={!contract}>Mint 100 CIN</Button>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-chart-2">$2.50</div>

@@ -267,7 +267,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">Price</label>
+                      <label className="text-xs text-muted-foreground">Purchase Price</label>
                       <Input
                         value={formatNumberWithCommas(trade.price)}
                         onChange={(e) => updateTrade(trade.id, "price", e.target.value.replace(/,/g, ''))}
