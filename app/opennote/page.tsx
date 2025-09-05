@@ -1,16 +1,11 @@
 "use client"
 
-import { useMemo } from "react"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { NoteFeed } from "@/components/notes/note-feed"
-import { useNotes } from "@/lib/hooks"
+import { usePublicNotes } from "@/lib/hooks"
 
 export default function OpenNotePage() {
-  const { notes } = useNotes()
-
-  const publicNotes = useMemo(() => {
-    return notes.filter((note) => note.is_public)
-  }, [notes])
+  const { publicNotes } = usePublicNotes()
 
   return (
     <div className="flex h-screen bg-background">

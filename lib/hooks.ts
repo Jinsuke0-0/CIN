@@ -159,3 +159,39 @@ export function useNotes() {
 
   return { notes, addNote, updateNote, deleteNote, incrementView, loading, error };
 }
+
+export function usePublicNotes() {
+  const [publicNotes, setPublicNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPublicNotes = async () => {
+      setLoading(true);
+      setError(null);
+      const { data, error } = await supabase
+        .from('notes')
+        .select('*, trades(*)')
+        .eq('is_public', true); // Filter by is_public
+
+      if (error) {
+        console.error("Error fetching public notes:", error);
+        setError(error.message);
+        setPublicNotes([]);
+      } else {
+        const formattedNotes = data.map(note => ({
+          ...note,
+          createdAt: note.created_at,
+          updatedAt: note.updated_at,
+          is_public: note.is_public,
+        }));
+        setPublicNotes(formattedNotes as Note[]);
+      }
+      setLoading(false);
+    };
+
+    fetchPublicNotes();
+  }, []); // No dependency on userId, fetches all public notes
+
+  return { publicNotes, loading, error };
+}
