@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,6 +28,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [tags, setTags] = useState<string[]>(note?.tags || [])
   const [newTag, setNewTag] = useState("")
   const [is_public, setIsPublic] = useState(note?.is_public || false)
+  const [pricing, setPricing] = useState(note?.pricing || "free")
+  const [price, setPrice] = useState<number | string>(note?.price ?? '')
   const [trades, setTrades] = useState<Trade[]>(note?.trades || [])
 
   const categories = [
@@ -93,6 +93,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       category,
       tags,
       is_public,
+      pricing: is_public ? pricing : "free",
+      price: is_public && pricing === "paid" ? parseFloat(price as string) || 0 : 0,
       trades: trades.filter(trade => trade.confirmed), // Only confirmed trades are sent
     }
     onSave(noteData)
@@ -163,6 +165,35 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
               </Select>
             </div>
           </div>
+
+          {is_public && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+              <div>
+                <label className="text-sm font-medium text-card-foreground mb-2 block">Pricing</label>
+                <Select value={pricing} onValueChange={setPricing}>
+                  <SelectTrigger className="bg-input border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="free">Free</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {pricing === 'paid' && (
+                <div>
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">Price (in CIN)</label>
+                  <Input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="e.g., 100"
+                    className="bg-input border-border"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Tags */}
           <div>

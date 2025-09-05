@@ -16,6 +16,7 @@ function NotesPageContent() {
   const [viewingNote, setViewingNote] = useState<Note | null>(null)
   const searchParams = useSearchParams()
   const router = useRouter()
+  const returnPath = searchParams.get("returnPath") || "/notes";
 
   useEffect(() => {
     const noteId = searchParams.get("noteId")
@@ -80,7 +81,7 @@ function NotesPageContent() {
   const handleBackToList = () => {
     setCurrentView("list")
     setViewingNote(null)
-    window.history.pushState({}, "", "/notes")
+    router.push(returnPath)
   }
 
   const renderContent = () => {

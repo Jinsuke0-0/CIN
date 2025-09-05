@@ -141,5 +141,21 @@ export function useNotes() {
     }
   }, []);
 
-  return { notes, addNote, updateNote, deleteNote, loading, error };
+  const incrementView = useCallback(async (noteId: string) => {
+    const { error } = await supabase.rpc('increment_view', {
+      note_id_arg: noteId,
+    });
+
+    if (error) {
+      console.error("Error incrementing view:", JSON.stringify(error, null, 2));
+    } else {
+      setNotes((prevNotes) =>
+        prevNotes.map((n) =>
+          n.id === noteId ? { ...n, views: n.views + 1 } : n
+        )
+      );
+    }
+  }, []);
+
+  return { notes, addNote, updateNote, deleteNote, incrementView, loading, error };
 }

@@ -16,7 +16,9 @@ export interface Note {
   content: string
   category: string
   tags: string[]
-    is_public: boolean; // Changed from isPublic to is_public
+  is_public: boolean; // Changed from isPublic to is_public
+  pricing: "free" | "paid";
+  price: number;
   views: number
   likes: number
   createdAt: string
@@ -32,6 +34,8 @@ export const initialNotes: Note[] = [
     category: "技術分析",
     tags: ["BTC", "テクニカル分析", "Q1戦略"],
     is_public: true,
+    pricing: "paid",
+    price: 100,
     views: 234,
     likes: 12,
     createdAt: "2024-01-15T10:00:00Z",
@@ -64,6 +68,8 @@ export const initialNotes: Note[] = [
     category: "DeFi",
     tags: ["ETH", "ステーキング", "DeFi"],
     is_public: false,
+    pricing: "free",
+    price: 0,
     views: 0,
     likes: 0,
     createdAt: "2024-01-12T14:30:00Z",
@@ -77,6 +83,8 @@ export const initialNotes: Note[] = [
     category: "ファンダメンタル分析",
     tags: ["DeFi", "利回り", "比較分析"],
     is_public: true,
+    pricing: "free",
+    price: 0,
     views: 456,
     likes: 28,
     createdAt: "2024-01-10T09:15:00Z",
