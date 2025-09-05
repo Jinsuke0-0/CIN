@@ -31,7 +31,7 @@ export function RecentNotes() {
       (note, index, self) => index === self.findIndex((t) => t.id === note.id)
     )
 
-    return [...uniqueNotes]
+        return [...uniqueNotes]
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
       .slice(0, 5)
   }, [notes])
@@ -75,14 +75,18 @@ export function RecentNotes() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {note.views}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {note.likes}
-                      </div>
+                      {note.is_public && (
+                        <>
+                          <div className="flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            {note.views}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Heart className="h-3 w-3" />
+                            {note.likes}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </Link>

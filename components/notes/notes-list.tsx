@@ -215,14 +215,18 @@ export function NotesList({ notes, onCreateNote, onEditNote, onDeleteNote, onVie
 
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-3 w-3" />
-                      {note.views}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Heart className="h-3 w-3" />
-                      {note.likes}
-                    </div>
+                    {note.is_public && (
+                      <>
+                        <div className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          {note.views}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" />
+                          {note.likes}
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div>Created: {formatDate(note.createdAt)}</div>
                   <div>Updated: {formatDate(note.updatedAt)}</div>

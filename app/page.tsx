@@ -43,7 +43,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ヘッダー */}
+
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -88,9 +88,7 @@ export default function HomePage() {
             <br />
             Cryptoポートフォリオ管理/共有プラットフォームです。
             <br />
-            投資ノートの作成、取引記録、情報共有、
-            <br />
-            独自TokenであるCIN TokenはCrypto Investment Note経済圏を形成しています。
+            CIN TokenはCrypto Investment Note経済圏を形成しています。
           </p>
         </section>
 
