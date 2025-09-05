@@ -22,7 +22,7 @@ export function useNotes() {
       const { data, error } = await supabase
         .from('notes')
         .select('*, trades(*)') // Select trades along with the note
-        .eq('user_id', userId); // Filter by user_id
+        .or(`user_id.eq.${userId},is_public.eq.true`); // Filter by user_id OR is_public
 
       if (error) {
         console.error("Error fetching notes:", error);

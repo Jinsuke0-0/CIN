@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar } from "lucide-react"
+import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar, Wallet } from "lucide-react"
 
 interface SidebarProps {
   className?: string
@@ -18,6 +18,7 @@ export function Sidebar({ className }: SidebarProps) {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Investment Notes", href: "/notes", icon: FileText },
     { name: "Performance", href: "/analytics", icon: BarChart3 },
+    { name: "Faucet", href: "/faucet", icon: Wallet },
   ]
 
   const cinPublicNav = [

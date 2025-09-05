@@ -21,7 +21,7 @@ interface MarketCoin {
   price_change_percentage_24h: number
 }
 
-const CIN_TOKEN_ADDRESS = "0x60332F32363d1D409Edcaba94acf6ee6042893fE"
+const CIN_TOKEN_ADDRESS = "0xD6533D9b1705c01D048D8CcA087F0426d1A09d08"
 
 export default function DashboardPage() {
   const [walletAddress, setWalletAddress] = useState("")
@@ -81,6 +81,7 @@ export default function DashboardPage() {
         // Re-initialize provider and signer after switching chain
         const newProvider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await newProvider.send("eth_requestAccounts", []);
+        console.log("Connected wallet address (accounts[0]):", accounts[0]); // Added console.log
         const signer = await newProvider.getSigner();
         setWalletAddress(accounts[0]);
         setSigner(signer);
@@ -91,9 +92,14 @@ export default function DashboardPage() {
 
         const cinTokenContract = new ethers.Contract(CIN_TOKEN_ADDRESS, CINTokenABI.abi, signer);
         setContract(cinTokenContract);
+        console.log("CIN Token Contract initialized:", cinTokenContract); // 追加
 
         const balance = await cinTokenContract.balanceOf(accounts[0]);
-        setCinBalance(ethers.formatUnits(balance, 18));
+        console.log("Raw CIN balance from contract:", balance); // 追加
+
+        const formattedBalance = ethers.formatUnits(balance, 18);
+        setCinBalance(formattedBalance);
+        console.log("Formatted CIN balance:", formattedBalance); // 追加
       } catch (error) {
         console.error("Failed to connect wallet:", error);
       }

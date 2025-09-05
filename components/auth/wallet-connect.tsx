@@ -39,6 +39,7 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
       const address = await signer.getAddress()
       
       onConnect(address)
+
     } catch (err: any) {
       setError(err.message || "ウォレットの接続に失敗しました。")
     } finally {
