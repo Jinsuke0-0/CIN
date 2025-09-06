@@ -89,7 +89,7 @@ export function AssetAllocation() {
     }).format(value)
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
