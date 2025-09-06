@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNotes } from '@/lib/hooks';
+import { Trade } from '@/lib/initial-data'; // Add this line
 
 // 1. Define the shape of the context data
 interface PerformanceMetrics {
