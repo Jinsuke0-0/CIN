@@ -120,7 +120,7 @@ export function AssetAllocation() {
         x={x}
         y={y}
         fill="white"
-        textAnchor={x > cx ? "start" : "end"}
+        textAnchor={x > Number(cx) ? "start" : "end"}
         dominantBaseline="central"
         fontSize={12}
         fontWeight="bold"
