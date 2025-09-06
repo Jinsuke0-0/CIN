@@ -111,7 +111,7 @@ export function AssetAllocation() {
     if (percentage < 5) return null // Don't display for less than 5%
 
     const RADIAN = Math.PI / 180
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+    const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5
     const x = cx + radius * Math.cos(-midAngle * RADIAN)
     const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
