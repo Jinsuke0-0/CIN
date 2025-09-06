@@ -1,46 +1,31 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { upsertUser } from '@/lib/user';
 
 export async function POST(request: Request) {
   try {
-    console.log("API: Request received"); // 追加
-    const body = await request.json(); // body を変数に格納
-    console.log("API: Request body:", body); // 追加
-    const { walletAddress } = body; // body から walletAddress を取得
+    console.log("API: Request received");
+    const body = await request.json();
+    console.log("API: Request body:", body);
+    const { walletAddress } = body as { walletAddress?: string };
 
-    if (!walletAddress) {
-      console.log("API: Wallet address is missing"); // 追加
+    if (!walletAddress || typeof walletAddress !== 'string') {
+      console.log("API: Wallet address is missing or invalid");
       return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });
     }
 
-    console.log("API: Searching for user with walletAddress:", walletAddress.toLowerCase()); // 追加
-    let user = await prisma.user.findUnique({
-      where: {
-        walletAddress: walletAddress.toLowerCase(),
-      },
-    });
-    console.log("API: User found:", user); // 追加
-
-    if (!user) {
-      console.log("API: Creating new user"); // 追加
-      user = await prisma.user.create({
-        data: {
-          walletAddress: walletAddress.toLowerCase(),
-          // Other fields like email, name can be added later if needed
-        },
-      });
-      console.log("API: New user created:", user); // 追加
-      return NextResponse.json({ message: 'User signed up successfully', user }, { status: 201 });
-    } else {
-      console.log("API: User logged in"); // 追加
-      return NextResponse.json({ message: 'User logged in successfully', user }, { status: 200 });
+    const id = walletAddress.toLowerCase();
+    console.log("API: Upserting user with id:", id);
+    const { data, error } = await upsertUser(id);
+    if (error) {
+      console.error("API: Upsert failed:", error);
+      return NextResponse.json({ error: 'Failed to upsert user' }, { status: 500 });
     }
+
+    // Supabase upsert doesn't easily differentiate between insert/update without additional logic.
+    console.log("API: User upserted:", data);
+    return NextResponse.json({ message: 'User logged in successfully', user: data }, { status: 200 });
   } catch (error) {
-    console.error('API Error caught in catch block:', error); // 変更
+    console.error('API Error caught in catch block:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
