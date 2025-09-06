@@ -31,6 +31,8 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   const [pricing, setPricing] = useState(note?.pricing || "free")
   const [price, setPrice] = useState<number | string>(note?.price ?? '')
   const [trades, setTrades] = useState<Trade[]>(note?.trades || [])
+  const isContentRequired = is_public
+  const isContentMissing = isContentRequired && content.trim() === ''
 
   const categories = [
     "Technical Analysis",
@@ -82,10 +84,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   }
 
   const handleSave = () => {
-    if (is_public && content.trim() === '') {
-      alert('Note Content is required for public notes.');
-      return;
-    }
+    if (isContentMissing) return;
 
     const noteData = {
       title,
@@ -109,7 +108,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleSave} disabled={isContentMissing} className="bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
             <Save className="mr-2 h-4 w-4" />
             Save
           </Button>
@@ -163,6 +162,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                   <SelectItem value="public">Public</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="mt-2 text-xs text-muted-foreground">Publicにすると本文（Note Content）が必須になります。</p>
             </div>
           </div>
 
@@ -221,22 +221,25 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         </CardContent>
       </Card>
 
-      {/* Note Content */}
-      {is_public && (
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-card-foreground">Note Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Record your investment analysis, strategies, market observations, etc..."
-              className="min-h-[300px] bg-input border-border resize-none"
-            />
-          </CardContent>
-        </Card>
-      )}
+      {/* Note Content (always visible); required when Public */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-card-foreground">Note Content{isContentRequired && <span className="ml-2 text-xs text-red-500">(Publicでは必須)</span>}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Record your investment analysis, strategies, market observations, etc..."
+            className={`min-h-[300px] bg-input border ${isContentMissing ? 'border-red-500' : 'border-border'} resize-none`}
+            aria-invalid={isContentMissing}
+            aria-describedby={isContentMissing ? 'content-error' : undefined}
+          />
+          {isContentMissing && (
+            <p id="content-error" className="mt-2 text-sm text-red-500">Publicにする場合は本文の入力が必要です。</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Trade Log */}
       <Card className="bg-card border-border">
