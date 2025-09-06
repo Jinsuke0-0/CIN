@@ -17,7 +17,7 @@ const formatNumberWithCommas = (value: string) => {
 
 interface NoteEditorProps {
   note?: Partial<Note>
-  onSave: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes'>) => void
+  onSave: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'user_id'>) => void
   onCancel: () => void
 }
 
