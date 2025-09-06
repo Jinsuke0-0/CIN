@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { type Note } from "@/lib/initial-data"
+import { type Note, type Trade } from "@/lib/initial-data"
 import { supabase } from "@/lib/supabase" // Import supabase client
 
 export function useNotes() {
@@ -29,13 +29,8 @@ export function useNotes() {
         setError(error.message);
         setNotes([]);
       } else {
-        const formattedNotes = data.map(note => ({
-          ...note,
-          createdAt: note.created_at,
-          updatedAt: note.updated_at,
-          is_public: note.is_public,
-        }));
-        setNotes(formattedNotes as Note[]);
+        const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
+        setNotes(formattedNotes);
       }
       setLoading(false);
     };
@@ -43,22 +38,24 @@ export function useNotes() {
     fetchNotes();
   }, [userId]); // Re-fetch when userId changes
 
-  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'is_public'>) => {
+  // Accept note data without id/user_id/timestamps and without views/likes (set server-side defaults)
+  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'views' | 'likes'>) => {
     if (!userId) {
       setError("User not authenticated.");
       return;
     }
 
-    // Separate trades from the noteData
-    const { trades, ...noteToInsert } = noteData;
+  // Separate trades from the noteData
+  const { trades, is_public, ...noteToInsert } = noteData;
 
-    const newNote: Omit<Note, 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'trades'> = { // Omit trades here
+  // Prepare row for notes table (trades are handled in a separate table)
+  const newNote: Omit<Note, 'createdAt' | 'updatedAt' | 'trades'> = { // Omit only timestamps and trades here
       id: crypto.randomUUID(), // Generate a unique ID
       ...noteToInsert,
       user_id: userId, // Changed from userId to user_id
       views: 0,
       likes: 0,
-      is_public: noteToInsert.is_public !== undefined ? noteToInsert.is_public : false,
+  is_public: typeof is_public === 'boolean' ? is_public : false,
     };
 
     const { data: insertedNote, error: insertError } = await supabase
@@ -74,7 +71,7 @@ export function useNotes() {
     }
 
     if (insertedNote && trades && trades.length > 0) {
-      const tradesToInsert = trades.map(trade => ({
+  const tradesToInsert = trades.map((trade: NonNullable<Note['trades']>[number]) => ({
         ...trade,
         note_id: insertedNote.id, // Link trades to the new note
       }));
@@ -104,12 +101,13 @@ export function useNotes() {
         console.error("Error fetching full note after insert:", JSON.stringify(fetchError, null, 2));
         setError(fetchError.message);
       } else if (fullNote) {
-        setNotes((prevNotes) => [fullNote as Note, ...prevNotes]);
+        const normalized = mapDBNoteToNote(fullNote as DBNote);
+        setNotes((prevNotes) => [normalized, ...prevNotes]);
       }
     }
   }, [userId]);
 
-  const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id' | 'is_public'>>) => {
+  const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>) => {
     const { data, error: updateError } = await supabase
       .from('notes')
       .update(noteData)
@@ -121,9 +119,8 @@ export function useNotes() {
       console.error("Error updating note:", JSON.stringify(updateError, null, 2));
       setError(updateError.message);
     } else if (data) {
-      setNotes((prevNotes) =>
-        prevNotes.map((n) => (n.id === noteId ? (data as Note) : n))
-      );
+      const normalized = mapDBNoteToNote(data as DBNote);
+      setNotes((prevNotes) => prevNotes.map((n) => (n.id === noteId ? normalized : n)));
     }
   }, []);
 
@@ -179,13 +176,8 @@ export function usePublicNotes() {
         setError(error.message);
         setPublicNotes([]);
       } else {
-        const formattedNotes = data.map(note => ({
-          ...note,
-          createdAt: note.created_at,
-          updatedAt: note.updated_at,
-          is_public: note.is_public,
-        }));
-        setPublicNotes(formattedNotes as Note[]);
+        const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
+        setPublicNotes(formattedNotes);
       }
       setLoading(false);
     };
@@ -194,4 +186,19 @@ export function usePublicNotes() {
   }, []); // No dependency on userId, fetches all public notes
 
   return { publicNotes, loading, error };
+}
+
+// ----- Types and helpers to normalize DB rows to Note interface -----
+type DBNote = Omit<Note, 'createdAt' | 'updatedAt'> & {
+  created_at: string;
+  updated_at: string;
+  trades?: Trade[];
+};
+
+function mapDBNoteToNote(row: DBNote): Note {
+  return {
+    ...row,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  } as Note;
 }

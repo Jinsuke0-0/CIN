@@ -55,7 +55,7 @@ function NotesPageContent() {
     window.history.pushState({}, "", `/notes?noteId=${note.id}`)
   }
 
-  const handleSaveNote = async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'user_id' | 'is_public'>) => {
+  const handleSaveNote = async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'user_id'>) => {
     if (editingNote) {
       await updateNote(editingNote.id, noteData)
     } else {

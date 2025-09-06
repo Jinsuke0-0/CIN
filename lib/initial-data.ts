@@ -6,9 +6,8 @@ export interface Trade {
   amount: string
   price: string
   date: string
-  confirmed: boolean;
   notes: string;
-  notes: string;
+  confirmed?: boolean;
 }
 
 export interface Note {
@@ -31,6 +30,7 @@ export interface Note {
 export const initialNotes: Note[] = [
   {
     id: "1",
+  user_id: "0x0000000000000000000000000000000000000001",
     title: "BTC分析 - 2024年Q1戦略",
     content: "ビットコインの技術分析と今四半期の投資戦略について詳細に分析...",
     category: "技術分析",
@@ -65,6 +65,7 @@ export const initialNotes: Note[] = [
   },
   {
     id: "2",
+  user_id: "0x0000000000000000000000000000000000000002",
     title: "ETH ステーキング戦略",
     content: "イーサリアム2.0ステーキングの最適化手法について...",
     category: "DeFi",
@@ -80,6 +81,7 @@ export const initialNotes: Note[] = [
   },
   {
     id: "3",
+  user_id: "0x0000000000000000000000000000000000000003",
     title: "DeFiプロトコル比較分析",
     content: "主要DeFiプラットフォームの利回り比較と投資戦略...",
     category: "ファンダメンタル分析",
