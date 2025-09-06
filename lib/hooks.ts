@@ -43,7 +43,7 @@ export function useNotes() {
     fetchNotes();
   }, [userId]); // Re-fetch when userId changes
 
-  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'user_id' | 'is_public'>) => {
+  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'is_public'>) => {
     if (!userId) {
       setError("User not authenticated.");
       return;
