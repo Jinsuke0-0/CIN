@@ -105,7 +105,7 @@ export function AssetAllocation() {
   }
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
-    if (percent === undefined || innerRadius === undefined || outerRadius === undefined) return null; // percent, innerRadius, outerRadius が undefined の場合はレンダリングしない
+    if (percent === undefined || innerRadius === undefined || outerRadius === undefined || cx === undefined || cy === undefined || midAngle === undefined) return null; // percent, innerRadius, outerRadius, cx, cy, midAngle が undefined の場合はレンダリングしない
 
     const percentage = percent * 100;
     if (percentage < 5) return null // Don't display for less than 5%
