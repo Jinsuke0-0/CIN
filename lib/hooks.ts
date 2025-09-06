@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { type Note, type Trade } from "@/lib/initial-data"
-import { supabase } from "@/lib/supabase" // Import supabase client
+import { getBrowserSupabase } from "@/lib/supabase" // Lazy-get supabase client for browser
 
 export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([])
@@ -19,7 +19,8 @@ export function useNotes() {
       }
       setLoading(true);
       setError(null);
-      const { data, error } = await supabase
+  const supabase = getBrowserSupabase();
+  const { data, error } = await supabase
         .from('notes')
         .select('*, trades(*)') // Select trades along with the note
         .or(`user_id.eq.${userId},is_public.eq.true`); // Filter by user_id OR is_public
@@ -58,7 +59,8 @@ export function useNotes() {
   is_public: typeof is_public === 'boolean' ? is_public : false,
     };
 
-    const { data: insertedNote, error: insertError } = await supabase
+  const supabase = getBrowserSupabase();
+  const { data: insertedNote, error: insertError } = await supabase
       .from('notes')
       .insert([newNote])
       .select()
@@ -76,7 +78,7 @@ export function useNotes() {
         note_id: insertedNote.id, // Link trades to the new note
       }));
 
-      const { error: tradesError } = await supabase
+  const { error: tradesError } = await supabase
         .from('trades')
         .insert(tradesToInsert);
 
@@ -91,7 +93,7 @@ export function useNotes() {
 
     if (insertedNote) {
       // Re-fetch the note with trades to update the local state correctly
-      const { data: fullNote, error: fetchError } = await supabase
+  const { data: fullNote, error: fetchError } = await supabase
         .from('notes')
         .select('*, trades(*)') // Select trades along with the note
         .eq('id', insertedNote.id)
@@ -108,7 +110,8 @@ export function useNotes() {
   }, [userId]);
 
   const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>) => {
-    const { data, error: updateError } = await supabase
+  const supabase = getBrowserSupabase();
+  const { data, error: updateError } = await supabase
       .from('notes')
       .update(noteData)
       .eq('id', noteId)
@@ -125,7 +128,8 @@ export function useNotes() {
   }, []);
 
   const deleteNote = useCallback(async (noteId: string) => {
-    const { error: deleteError } = await supabase
+  const supabase = getBrowserSupabase();
+  const { error: deleteError } = await supabase
       .from('notes')
       .delete()
       .eq('id', noteId);
@@ -139,7 +143,8 @@ export function useNotes() {
   }, []);
 
   const incrementView = useCallback(async (noteId: string) => {
-    const { error } = await supabase.rpc('increment_view', {
+  const supabase = getBrowserSupabase();
+  const { error } = await supabase.rpc('increment_view', {
       note_id_arg: noteId,
     });
 
@@ -166,7 +171,8 @@ export function usePublicNotes() {
     const fetchPublicNotes = async () => {
       setLoading(true);
       setError(null);
-      const { data, error } = await supabase
+  const supabase = getBrowserSupabase();
+  const { data, error } = await supabase
         .from('notes')
         .select('*, trades(*)')
         .eq('is_public', true); // Filter by is_public

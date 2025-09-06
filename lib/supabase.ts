@@ -1,18 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-function requireEnv(name: string): string {
-  const v = process.env[name];
-  if (!v) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return v;
-}
+// helper removed; env is checked at call sites
 
 // Export a getter so creation happens at call time, not at module evaluation time
-export const supabase = createClient(
-  requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
-  requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
-)
+let browserClient: SupabaseClient | null = null;
+
+export function getBrowserSupabase(): SupabaseClient {
+  if (browserClient) return browserClient;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error('Missing environment variable: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
+  browserClient = createClient(url, key);
+  return browserClient;
+}
 
 // For server-side usage, prefer server env vars if provided
 export function createServerSupabase() {
