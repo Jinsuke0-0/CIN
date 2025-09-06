@@ -170,7 +170,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
               <div>
                 <label className="text-sm font-medium text-card-foreground mb-2 block">Pricing</label>
-                <Select value={pricing} onValueChange={setPricing}>
+                <Select value={pricing} onValueChange={(value: "free" | "paid") => setPricing(value)}>
                   <SelectTrigger className="bg-input border-border">
                     <SelectValue />
                   </SelectTrigger>
