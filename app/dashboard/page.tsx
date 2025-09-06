@@ -84,7 +84,6 @@ export default function DashboardPage() {
         console.log("Connected wallet address (accounts[0]):", accounts[0]); // Added console.log
         const signer = await newProvider.getSigner();
         setWalletAddress(accounts[0]);
-        setSigner(signer);
         localStorage.setItem("walletAddress", accounts[0]);
 
         // Upsert user in the database
