@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +11,13 @@ import { type Trade } from "@/lib/initial-data"
 
 export function RecentNotes() {
   const { notes } = useNotes()
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserId(localStorage.getItem('walletAddress'))
+    }
+  }, [])
 
   const getTradeTypeSummary = (trades: Trade[] | undefined) => {
     if (!trades || trades.length === 0) return null;
@@ -27,14 +34,16 @@ export function RecentNotes() {
   const recentNotes = useMemo(() => {
     // Defensive filtering: ensure notes have valid IDs and are unique.
     const validNotes = notes.filter(note => note && note.id);
-    const uniqueNotes = validNotes.filter(
+    // Show only current user's notes on Dashboard
+    const mineOnly = userId ? validNotes.filter(n => n.user_id === userId) : []
+    const uniqueNotes = mineOnly.filter(
       (note, index, self) => index === self.findIndex((t) => t.id === note.id)
     )
 
         return [...uniqueNotes]
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
       .slice(0, 5)
-  }, [notes])
+  }, [notes, userId])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
