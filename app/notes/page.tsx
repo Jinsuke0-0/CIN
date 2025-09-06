@@ -10,7 +10,7 @@ import { type Note } from "@/lib/initial-data"
 import { NoteDetailView } from "@/components/notes/note-detail-view"
 
 function NotesPageContent() {
-  const { notes, addNote, updateNote, deleteNote } = useNotes()
+  const { notes, addNote, updateNote, deleteNote, error } = useNotes()
   const [currentView, setCurrentView] = useState<"list" | "create" | "edit" | "view">("list")
   const [editingNote, setEditingNote] = useState<Note | null>(null)
   const [viewingNote, setViewingNote] = useState<Note | null>(null)
@@ -115,7 +115,14 @@ function NotesPageContent() {
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        <main className="h-full overflow-y-auto p-6">{renderContent()}</main>
+        <main className="h-full overflow-y-auto p-6">
+          {error && (
+            <div className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+          {renderContent()}
+        </main>
       </div>
     </div>
   )

@@ -35,19 +35,25 @@ export function useNotes() {
       }
       setLoading(true);
       setError(null);
-  const supabase = getBrowserSupabase();
-  const { data, error } = await supabase
-        .from('notes')
-        .select('*, trades(*)') // Select trades along with the note
-        .or(`user_id.eq.${userId},is_public.eq.true`); // Filter by user_id OR is_public
+      try {
+        const supabase = getBrowserSupabase();
+        const { data, error } = await supabase
+          .from('notes')
+          .select('*, trades(*)')
+          .or(`user_id.eq.${userId},is_public.eq.true`);
 
-      if (error) {
-        console.error("Error fetching notes:", error);
-        setError(error.message);
+        if (error) {
+          console.error("Error fetching notes:", error);
+          setError(error.message);
+          setNotes([]);
+        } else {
+          const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
+          setNotes(formattedNotes);
+        }
+      } catch (e) {
+        console.error("Supabase client not available:", e);
+        setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
         setNotes([]);
-      } else {
-        const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
-        setNotes(formattedNotes);
       }
       setLoading(false);
     };
@@ -76,8 +82,15 @@ export function useNotes() {
   is_public: typeof is_public === 'boolean' ? is_public : false,
     };
 
-  const supabase = getBrowserSupabase();
-  const { data: insertedNote, error: insertError } = await supabase
+    let supabase;
+    try {
+      supabase = getBrowserSupabase();
+    } catch (e) {
+      console.error("Supabase client not available:", e);
+      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      return false;
+    }
+    const { data: insertedNote, error: insertError } = await supabase
       .from('notes')
       .insert([newNote])
       .select()
@@ -130,8 +143,15 @@ export function useNotes() {
   }, [userId]);
 
   const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>): Promise<boolean> => {
-  const supabase = getBrowserSupabase();
-  const { data, error: updateError } = await supabase
+    let supabase;
+    try {
+      supabase = getBrowserSupabase();
+    } catch (e) {
+      console.error("Supabase client not available:", e);
+      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      return false;
+    }
+    const { data, error: updateError } = await supabase
       .from('notes')
       .update(noteData)
       .eq('id', noteId)
@@ -151,8 +171,15 @@ export function useNotes() {
   }, []);
 
   const deleteNote = useCallback(async (noteId: string) => {
-  const supabase = getBrowserSupabase();
-  const { error: deleteError } = await supabase
+    let supabase;
+    try {
+      supabase = getBrowserSupabase();
+    } catch (e) {
+      console.error("Supabase client not available:", e);
+      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      return;
+    }
+    const { error: deleteError } = await supabase
       .from('notes')
       .delete()
       .eq('id', noteId);
@@ -166,8 +193,15 @@ export function useNotes() {
   }, []);
 
   const incrementView = useCallback(async (noteId: string) => {
-  const supabase = getBrowserSupabase();
-  const { error } = await supabase.rpc('increment_view', {
+    let supabase;
+    try {
+      supabase = getBrowserSupabase();
+    } catch (e) {
+      console.error("Supabase client not available:", e);
+      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      return;
+    }
+    const { error } = await supabase.rpc('increment_view', {
       note_id_arg: noteId,
     });
 
@@ -194,19 +228,25 @@ export function usePublicNotes() {
     const fetchPublicNotes = async () => {
       setLoading(true);
       setError(null);
-  const supabase = getBrowserSupabase();
-  const { data, error } = await supabase
-        .from('notes')
-        .select('*, trades(*)')
-        .eq('is_public', true); // Filter by is_public
+      try {
+        const supabase = getBrowserSupabase();
+        const { data, error } = await supabase
+          .from('notes')
+          .select('*, trades(*)')
+          .eq('is_public', true); // Filter by is_public
 
-      if (error) {
-        console.error("Error fetching public notes:", error);
-        setError(error.message);
+        if (error) {
+          console.error("Error fetching public notes:", error);
+          setError(error.message);
+          setPublicNotes([]);
+        } else {
+          const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
+          setPublicNotes(formattedNotes);
+        }
+      } catch (e) {
+        console.error("Supabase client not available:", e);
+        setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
         setPublicNotes([]);
-      } else {
-        const formattedNotes = (data as DBNote[]).map(mapDBNoteToNote);
-        setPublicNotes(formattedNotes);
       }
       setLoading(false);
     };
