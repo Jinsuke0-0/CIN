@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { TrendingUp, Wallet, FileText, BarChart3, Users, Shield } from "lucide-react"
 import { WalletConnect } from "@/components/auth/wallet-connect"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { upsertUser } from "@/lib/user"
+// user upsert is now handled via API route to avoid client-side supabase usage
 
 export default function HomePage() {
   const [account, setAccount] = useState<string | null>(null)
@@ -26,13 +26,22 @@ export default function HomePage() {
     localStorage.setItem("walletAddress", address)
     setIsDialogOpen(false)
     
-    // Upsert user data to Supabase
-    console.log("Address received in handleConnect:", address);
-    const { error } = await upsertUser(address);
-    if (error) {
-      console.error("Failed to save user data:", error);
-      // Optionally handle the error, e.g., show a toast notification
-    }
+    // Persist user via server API; always navigate to dashboard even if this fails
+    console.log("Address received in handleConnect:", address)
+    void fetch("/api/auth/wallet-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ walletAddress: address }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text().catch(() => "")
+          console.error("wallet-login API failed:", res.status, text)
+        }
+      })
+      .catch((e) => {
+        console.error("wallet-login API error:", e)
+      })
 
     router.push("/dashboard")
   }

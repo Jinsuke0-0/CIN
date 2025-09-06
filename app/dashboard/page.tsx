@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { PortfolioProvider } from "@/contexts/PortfolioContext"
 import CINTokenABI from "@/lib/abi/CINToken.json"
-import { upsertUser } from "@/lib/user"
+// user upsert is handled via API route to avoid client-side supabase usage
 
 interface MarketCoin {
   id: string
@@ -86,8 +86,20 @@ export default function DashboardPage() {
         setWalletAddress(accounts[0]);
         localStorage.setItem("walletAddress", accounts[0]);
 
-        // Upsert user in the database
-        await upsertUser(accounts[0]);
+        // Upsert user via server API; non-blocking for UX
+        try {
+          const res = await fetch("/api/auth/wallet-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ walletAddress: accounts[0] }),
+          })
+          if (!res.ok) {
+            const text = await res.text().catch(() => "")
+            console.error("wallet-login API failed:", res.status, text)
+          }
+        } catch (e) {
+          console.error("wallet-login API error:", e)
+        }
 
         const cinTokenContract = new ethers.Contract(CIN_TOKEN_ADDRESS, CINTokenABI.abi, signer);
         console.log("CIN Token Contract initialized:", cinTokenContract); // 追加
