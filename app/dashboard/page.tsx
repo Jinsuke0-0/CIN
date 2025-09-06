@@ -90,7 +90,6 @@ export default function DashboardPage() {
         await upsertUser(accounts[0]);
 
         const cinTokenContract = new ethers.Contract(CIN_TOKEN_ADDRESS, CINTokenABI.abi, signer);
-        setContract(cinTokenContract);
         console.log("CIN Token Contract initialized:", cinTokenContract); // 追加
 
         const balance = await cinTokenContract.balanceOf(accounts[0]);
