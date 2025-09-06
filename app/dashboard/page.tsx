@@ -29,8 +29,7 @@ export default function DashboardPage() {
   const [loadingMarketData, setLoadingMarketData] = useState(true)
   const [marketError, setMarketError] = useState<string | null>(null)
   const [cinBalance, setCinBalance] = useState<string>("0")
-  const [contract, setContract] = useState<ethers.Contract | null>(null)
-  const [signer, setSigner] = useState<ethers.Signer | null>(null)
+  
 
   const router = useRouter()
 
@@ -46,9 +45,9 @@ export default function DashboardPage() {
               method: 'wallet_switchEthereumChain',
               params: [{ chainId: '0x14A34' }], // Base Sepolia chain ID in hex
             });
-          } catch (switchError: any) {
+          } catch (switchError: unknown) {
             // This error code indicates that the chain has not been added to MetaMask.
-            if (switchError.code === 4902) {
+            if (switchError instanceof Error && switchError.code === 4902) {
               try {
                 await window.ethereum.request({
                   method: 'wallet_addEthereumChain',
@@ -195,7 +194,7 @@ export default function DashboardPage() {
                         marketData.map((coin) => (
                           <div key={coin.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <img src={coin.image} alt={coin.name} className="h-8 w-8" />
+                              <Image src={coin.image} alt={coin.name} width={32} height={32} />
                               <div>
                                 <div className="font-medium text-card-foreground">{coin.symbol.toUpperCase()}</div>
                                 <div className="text-sm text-muted-foreground">{coin.name}</div>

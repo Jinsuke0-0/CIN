@@ -89,7 +89,7 @@ export function AssetAllocation() {
     }).format(value)
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

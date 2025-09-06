@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     await tx.wait(); // Wait for the transaction to be mined
 
     return NextResponse.json({ message: 'CIN minted successfully', transactionHash: tx.hash });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Minting failed:', error);
-    return NextResponse.json({ error: error.message || 'Minting failed' }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Minting failed' }, { status: 500 });
   }
 }

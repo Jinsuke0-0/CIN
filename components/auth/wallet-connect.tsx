@@ -40,8 +40,8 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
       
       onConnect(address)
 
-    } catch (err: any) {
-      setError(err.message || "ウォレットの接続に失敗しました。")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "ウォレットの接続に失敗しました。")
     } finally {
       setIsConnecting(false)
     }

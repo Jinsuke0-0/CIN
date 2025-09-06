@@ -53,8 +53,8 @@ export default function FaucetPage() {
       } else {
         throw new Error(data.error || "トークンの配布に失敗しました。");
       }
-    } catch (err: any) {
-      setMintError(err.message || "トークンの配布中にエラーが発生しました。");
+    } catch (err: unknown) {
+      setMintError(err instanceof Error ? err.message : "トークンの配布中にエラーが発生しました。");
     } finally {
       setIsMinting(false);
     }
