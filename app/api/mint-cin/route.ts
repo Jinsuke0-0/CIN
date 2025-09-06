@@ -15,15 +15,24 @@ export async function POST(request: Request) {
 
     const privateKey = process.env.DEPLOYER_PRIVATE_KEY;
     if (!privateKey) {
-      throw new Error('DEPLOYER_PRIVATE_KEY is not set in environment variables');
+      return NextResponse.json({ error: 'Server misconfiguration: DEPLOYER_PRIVATE_KEY is not set' }, { status: 500 });
     }
 
     const rpcUrl = process.env.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org';
     console.log("Attempting to connect to RPC URL:", rpcUrl); // 追加
 
-    const provider = new ethers.JsonRpcProvider(rpcUrl);
-    const wallet = new ethers.Wallet(privateKey, provider);
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const wallet = new ethers.Wallet(privateKey, provider);
+  console.log("Deployer address:", await wallet.getAddress());
     const tokenContract = new ethers.Contract(CIN_TOKEN_ADDRESS, CINTokenABI.abi, wallet);
+    try {
+      const owner = await tokenContract.owner();
+      if (owner.toLowerCase() !== (await wallet.getAddress()).toLowerCase()) {
+        return NextResponse.json({ error: 'Server misconfiguration: DEPLOYER is not the token owner' }, { status: 500 });
+      }
+    } catch (e) {
+      console.warn('Could not verify token owner (is ABI/address correct on Base Sepolia?)', e);
+    }
 
     // Mint tokens to the new user
     const tx = await tokenContract.mint(userAddress, MINT_AMOUNT);
