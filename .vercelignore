@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+# next.js build output
+.next
+out
+
+# local development files
+.env
+.env.*
+
+# misc
+.DS_Store
+
+# build artifacts
+artifacts
+cache
