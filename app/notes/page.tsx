@@ -90,7 +90,7 @@ function NotesPageContent() {
         return viewingNote ? <NoteDetailView note={viewingNote} onBack={handleBackToList} /> : null
       case "create":
       case "edit":
-        return <NoteEditor note={editingNote} onSave={handleSaveNote} onCancel={handleCancel} />
+        return <NoteEditor note={editingNote === null ? undefined : editingNote} onSave={handleSaveNote} onCancel={handleCancel} />
       case "list":
       default:
         return (
