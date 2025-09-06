@@ -48,7 +48,7 @@ export default function DashboardPage() {
             });
           } catch (switchError: unknown) {
             // This error code indicates that the chain has not been added to MetaMask.
-            if (switchError instanceof Error && switchError.code === 4902) {
+            if (switchError instanceof Error && 'code' in switchError && switchError.code === 4902) {
               try {
                 await window.ethereum.request({
                   method: 'wallet_addEthereumChain',
