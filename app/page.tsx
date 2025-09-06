@@ -18,8 +18,18 @@ export default function HomePage() {
     const storedAddress = localStorage.getItem("walletAddress")
     if (storedAddress) {
       setAccount(storedAddress)
+      // If already authenticated, redirect to dashboard automatically
+      try {
+        // Use replace to avoid stacking history
+        router.replace("/dashboard")
+      } catch (e) {
+        console.warn("router.replace failed, fallback to location.assign", e)
+        if (typeof window !== "undefined") {
+          window.location.assign("/dashboard")
+        }
+      }
     }
-  }, [])
+  }, [router])
 
   const handleConnect = async (address: string) => {
     setAccount(address)
@@ -43,7 +53,25 @@ export default function HomePage() {
         console.error("wallet-login API error:", e)
       })
 
-    router.push("/dashboard")
+    try {
+      router.push("/dashboard")
+      // Fallback in case client-side routing is blocked by modal/transition
+      setTimeout(() => {
+        if (typeof window !== "undefined" && window.location.pathname !== "/dashboard") {
+          router.replace("/dashboard")
+          setTimeout(() => {
+            if (window.location.pathname !== "/dashboard") {
+              window.location.assign("/dashboard")
+            }
+          }, 150)
+        }
+      }, 50)
+    } catch (e) {
+      console.warn("router.push failed, forcing navigation:", e)
+      if (typeof window !== "undefined") {
+        window.location.assign("/dashboard")
+      }
+    }
   }
 
   const handleDisconnect = () => {
@@ -66,6 +94,10 @@ export default function HomePage() {
                 <div className="text-sm text-muted-foreground">
                   {`${account.substring(0, 6)}...${account.substring(account.length - 4)}`}
                 </div>
+                <Button onClick={() => router.push('/dashboard')}>Dashboardへ</Button>
+                <Button asChild variant="ghost">
+                  <a href="/dashboard" className="underline text-muted-foreground">遷移しない場合</a>
+                </Button>
                 <Button variant="outline" onClick={handleDisconnect}>切断</Button>
               </div>
             ) : (
