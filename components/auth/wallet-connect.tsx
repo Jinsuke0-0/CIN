@@ -47,30 +47,6 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
     }
   }
 
-  const handleSwitchAccount = async () => {
-    setIsConnecting(true)
-    setError(null)
-    try {
-      if (typeof window.ethereum === "undefined") {
-        throw new Error("MetaMaskがインストールされていません。")
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum)
-      
-      // ユーザーにアカウントの切り替えを要求
-      await provider.send("eth_requestAccounts", [])
-      
-      const signer = await provider.getSigner()
-      const address = await signer.getAddress()
-      
-      onConnect(address)
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "アカウントの切り替えに失敗しました。")
-    } finally {
-      setIsConnecting(false)
-    }
-  }
-
   return (
     <div>
       <VisuallyHidden.Root>
@@ -99,15 +75,6 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
           >
             <Wallet className="mr-2 h-5 w-5" />
             {isConnecting ? "接続中..." : "MetaMaskで接続"}
-          </Button>
-          <Button
-            onClick={handleSwitchAccount}
-            disabled={isConnecting}
-            className="w-full bg-secondary hover:bg-secondary/90"
-            size="lg"
-          >
-            <Wallet className="mr-2 h-5 w-5" />
-            アカウントを切り替える
           </Button>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
