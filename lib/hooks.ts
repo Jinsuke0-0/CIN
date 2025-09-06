@@ -56,11 +56,11 @@ export function useNotes() {
   }, [userId]); // Re-fetch when userId changes
 
   // Accept note data without id/user_id/timestamps and without views/likes (set server-side defaults)
-  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'views' | 'likes'>) => {
+  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'views' | 'likes'>): Promise<boolean> => {
     const currentUserId = typeof window !== 'undefined' ? (userId ?? localStorage.getItem('walletAddress')) : userId
     if (!currentUserId) {
       setError("User not authenticated.");
-      return;
+      return false;
     }
 
   // Separate trades from the noteData
@@ -86,7 +86,7 @@ export function useNotes() {
     if (insertError) {
       console.error("Error adding note:", JSON.stringify(insertError, null, 2));
       setError(insertError.message);
-      return;
+      return false;
     }
 
     if (insertedNote && trades && trades.length > 0) {
@@ -104,7 +104,7 @@ export function useNotes() {
         setError(tradesError.message);
         // Optionally, you might want to delete the inserted note if trades insertion fails
         // await supabase.from('notes').delete().eq('id', insertedNote.id);
-        return;
+        return false;
       }
     }
 
@@ -119,14 +119,17 @@ export function useNotes() {
       if (fetchError) {
         console.error("Error fetching full note after insert:", JSON.stringify(fetchError, null, 2));
         setError(fetchError.message);
+        return false;
       } else if (fullNote) {
         const normalized = mapDBNoteToNote(fullNote as DBNote);
         setNotes((prevNotes) => [normalized, ...prevNotes]);
+        return true;
       }
     }
+    return false;
   }, [userId]);
 
-  const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>) => {
+  const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>): Promise<boolean> => {
   const supabase = getBrowserSupabase();
   const { data, error: updateError } = await supabase
       .from('notes')
@@ -138,10 +141,13 @@ export function useNotes() {
     if (updateError) {
       console.error("Error updating note:", JSON.stringify(updateError, null, 2));
       setError(updateError.message);
+      return false;
     } else if (data) {
       const normalized = mapDBNoteToNote(data as DBNote);
       setNotes((prevNotes) => prevNotes.map((n) => (n.id === noteId ? normalized : n)));
+      return true;
     }
+    return false;
   }, []);
 
   const deleteNote = useCallback(async (noteId: string) => {

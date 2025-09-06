@@ -112,6 +112,9 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             <Save className="mr-2 h-4 w-4" />
             Save
           </Button>
+          {isContentMissing && (
+            <span className="self-center text-xs text-red-500">Content is required when Visibility is Public.</span>
+          )}
         </div>
       </div>
 
@@ -162,7 +165,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
                   <SelectItem value="public">Public</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="mt-2 text-xs text-muted-foreground">Publicにすると本文（Note Content）が必須になります。</p>
+              <p className="mt-2 text-xs text-muted-foreground">When set to Public, Note Content is required.</p>
             </div>
           </div>
 
@@ -224,7 +227,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
       {/* Note Content (always visible); required when Public */}
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-card-foreground">Note Content{isContentRequired && <span className="ml-2 text-xs text-red-500">(Publicでは必須)</span>}</CardTitle>
+          <CardTitle className="text-card-foreground">Note Content{isContentRequired && <span className="ml-2 text-xs text-red-500">(Required when Public)</span>}</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea
@@ -236,7 +239,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             aria-describedby={isContentMissing ? 'content-error' : undefined}
           />
           {isContentMissing && (
-            <p id="content-error" className="mt-2 text-sm text-red-500">Publicにする場合は本文の入力が必要です。</p>
+            <p id="content-error" className="mt-2 text-sm text-red-500">Content is required for Public notes.</p>
           )}
         </CardContent>
       </Card>

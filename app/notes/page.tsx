@@ -56,12 +56,14 @@ function NotesPageContent() {
   }
 
   const handleSaveNote = async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'likes' | 'user_id'>) => {
-    if (editingNote) {
-      await updateNote(editingNote.id, noteData)
+    const ok = editingNote
+      ? await updateNote(editingNote.id, noteData)
+      : await addNote(noteData)
+    if (ok) {
+      router.push("/notes")
     } else {
-      await addNote(noteData)
+      alert("Failed to save note. Please check required fields and try again.")
     }
-    router.push("/notes") // Redirect to notes list page
   }
 
   const handleDeleteNote = (noteId: string) => {
