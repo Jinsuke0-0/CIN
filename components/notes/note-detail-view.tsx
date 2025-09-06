@@ -26,6 +26,8 @@ interface NoteDetailViewProps {
 
 export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
   const [isPurchased, setIsPurchased] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const { incrementView } = useNotes();
   const hasIncrementedView = useRef(false);
 
@@ -43,8 +45,17 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
     }
 
     try {
+      setPurchaseError(null);
+      setIsPurchasing(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
+      // Ensure we're on Base Sepolia (chainId 84532)
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 84532) {
+        alert("Please switch your wallet network to Base Sepolia and try again.");
+        setIsPurchasing(false);
+        return;
+      }
       const tokenContract = new ethers.Contract(CIN_TOKEN_ADDRESS, CINTokenABI.abi, signer);
 
       // Convert note.price to BigInt considering 18 decimals for ERC-20 tokens
@@ -64,7 +75,19 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
 
     } catch (error: unknown) {
       console.error("Error during purchase:", error);
-      alert(`Purchase failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      // Handle common RPC rate limit error from injected providers
+      const msg = (() => {
+        const e = error as any;
+        const rawMsg: string | undefined = e?.message || e?.info?.error?.message || e?.error?.message;
+        if (rawMsg && /rate limited/i.test(rawMsg)) {
+          return "Your RPC provider is rate limiting requests. Please try again in a moment, or configure a custom RPC (e.g. Alchemy/Infura) for Base Sepolia in your wallet.";
+        }
+        return `Purchase failed: ${error instanceof Error ? error.message : "Unknown error"}`;
+      })();
+      setPurchaseError(msg);
+    }
+    finally {
+      setIsPurchasing(false);
     }
   };
 
@@ -138,8 +161,13 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
               <Lock className="mx-auto h-12 w-12 text-muted-foreground" />
               <h2 className="mt-4 text-2xl font-bold text-card-foreground">This Content is Locked</h2>
               <p className="mt-2 text-muted-foreground">Purchase this note to unlock and view the full content.</p>
-              <Button onClick={handlePurchase} className="mt-6 bg-primary hover:bg-primary/90">
-                Purchase for {note.price} CIN
+              {purchaseError && (
+                <div className="mt-4 text-sm text-red-600">
+                  {purchaseError}
+                </div>
+              )}
+              <Button onClick={handlePurchase} disabled={isPurchasing} className="mt-6 bg-primary hover:bg-primary/90 disabled:opacity-60">
+                {isPurchasing ? "Processing…" : `Purchase for ${note.price} CIN`}
               </Button>
             </div>
           ) : (
