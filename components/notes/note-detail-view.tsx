@@ -62,9 +62,9 @@ export function NoteDetailView({ note, onBack }: NoteDetailViewProps) {
       setIsPurchased(true);
       alert(`You have successfully purchased the note for ${note.price} CIN!`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error during purchase:", error);
-      alert(`Purchase failed: ${error.message || error.reason || "Unknown error"}`);
+      alert(`Purchase failed: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 

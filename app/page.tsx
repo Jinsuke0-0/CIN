@@ -28,7 +28,7 @@ export default function HomePage() {
     
     // Upsert user data to Supabase
     console.log("Address received in handleConnect:", address);
-    const { data: user, error } = await upsertUser(address);
+    const { error } = await upsertUser(address);
     if (error) {
       console.error("Failed to save user data:", error);
       // Optionally handle the error, e.g., show a toast notification

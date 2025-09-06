@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { FileText, Eye, Heart } from "lucide-react"
 import { useNotes } from "@/lib/hooks"
-import { type Note, type Trade } from "@/lib/initial-data"
+import { type Trade } from "@/lib/initial-data"
 
 export function RecentNotes() {
   const { notes } = useNotes()

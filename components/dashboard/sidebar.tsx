@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, Users, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar, Wallet } from "lucide-react"
+import { LayoutDashboard, FileText, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar, Wallet } from "lucide-react"
 
 interface SidebarProps {
   className?: string

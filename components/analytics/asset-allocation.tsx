@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import { usePortfolio } from '@/contexts/PortfolioContext'; // Import usePortfolio
 import { useEffect, useState } from 'react'; // Import useEffect and useState
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading state
+
 
 interface AssetData {
   name: string
@@ -13,21 +13,21 @@ interface AssetData {
   color: string
 }
 
+const chartColors = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+  "hsl(var(--chart-6))",
+  "hsl(var(--chart-7))",
+  "hsl(var(--chart-8))",
+];
+
 export function AssetAllocation() {
   const { allTrades, loading } = usePortfolio(); // Use the portfolio context
   const [calculatedAssetData, setCalculatedAssetData] = useState<AssetData[]>([]);
   const [totalValue, setTotalValue] = useState(0);
-
-  const chartColors = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-    "hsl(var(--chart-6))",
-    "hsl(var(--chart-7))",
-    "hsl(var(--chart-8))",
-  ];
 
   useEffect(() => {
     if (!loading && allTrades) {
@@ -104,7 +104,7 @@ export function AssetAllocation() {
     return null
   }
 
-  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
     const percentage = percent * 100;
     if (percentage < 5) return null // Don't display for less than 5%
 

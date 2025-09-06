@@ -10,7 +10,7 @@ import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 
 declare global {
   interface Window {
-    ethereum?: any
+    ethereum?: ethers.Eip1193Provider
   }
 }
 
@@ -64,8 +64,8 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
       const address = await signer.getAddress()
       
       onConnect(address)
-    } catch (err: any) {
-      setError(err.message || "アカウントの切り替えに失敗しました。")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "アカウントの切り替えに失敗しました。")
     } finally {
       setIsConnecting(false)
     }
