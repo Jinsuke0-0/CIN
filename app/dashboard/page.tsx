@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { ethers } from "ethers"
+import Image from "next/image"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { PortfolioOverview } from "@/components/dashboard/portfolio-overview"
 import { RecentNotes } from "@/components/dashboard/recent-notes"
