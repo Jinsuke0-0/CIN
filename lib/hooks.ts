@@ -8,12 +8,28 @@ export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
 
-  const userId = typeof window !== 'undefined' ? localStorage.getItem("walletAddress") : null;
+  // Keep userId in sync with localStorage changes and on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const read = () => setUserId(localStorage.getItem('walletAddress'))
+    read()
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'walletAddress') read()
+    }
+    const onFocus = () => read()
+    window.addEventListener('storage', onStorage)
+    window.addEventListener('focus', onFocus)
+    return () => {
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchNotes = async () => {
-      if (!userId) {
+  if (!userId) {
         setLoading(false);
         return;
       }
@@ -41,7 +57,8 @@ export function useNotes() {
 
   // Accept note data without id/user_id/timestamps and without views/likes (set server-side defaults)
   const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'views' | 'likes'>) => {
-    if (!userId) {
+    const currentUserId = typeof window !== 'undefined' ? (userId ?? localStorage.getItem('walletAddress')) : userId
+    if (!currentUserId) {
       setError("User not authenticated.");
       return;
     }
@@ -53,7 +70,7 @@ export function useNotes() {
   const newNote: Omit<Note, 'createdAt' | 'updatedAt' | 'trades'> = { // Omit only timestamps and trades here
       id: crypto.randomUUID(), // Generate a unique ID
       ...noteToInsert,
-      user_id: userId, // Changed from userId to user_id
+  user_id: currentUserId,
       views: 0,
       likes: 0,
   is_public: typeof is_public === 'boolean' ? is_public : false,
