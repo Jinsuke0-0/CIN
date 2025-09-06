@@ -112,8 +112,8 @@ export function AssetAllocation() {
 
     const RADIAN = Math.PI / 180
     const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 0.5
-    const x = cx + radius * Math.cos(-midAngle * RADIAN)
-    const y = cy + radius * Math.sin(-midAngle * RADIAN)
+    const x = Number(cx) + radius * Math.cos(-Number(midAngle) * RADIAN)
+    const y = Number(cy) + radius * Math.sin(-Number(midAngle) * RADIAN)
 
     return (
       <text
