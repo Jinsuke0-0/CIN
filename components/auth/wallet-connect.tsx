@@ -27,12 +27,12 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
     setError(null)
     try {
       if (typeof window.ethereum === "undefined") {
-        throw new Error("MetaMaskがインストールされていません。")
+        throw new Error("MetaMask is not installed.")
       }
 
       const provider = new ethers.BrowserProvider(window.ethereum)
       
-      // ユーザーにアカウントへの接続を要求
+      // Request to connect to the user's account
       await provider.send("eth_requestAccounts", [])
       
       const signer = await provider.getSigner()
@@ -41,7 +41,7 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
       onConnect(address)
 
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "ウォレットの接続に失敗しました。")
+      setError(err instanceof Error ? err.message : "Failed to connect to wallet.")
     } finally {
       setIsConnecting(false)
     }
@@ -50,15 +50,15 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
   return (
     <div>
       <VisuallyHidden.Root>
-        <DialogTitle>CINへようこそ</DialogTitle>
+        <DialogTitle>Welcome to CIN</DialogTitle>
       </VisuallyHidden.Root>
       <Card className="bg-card border-0">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <TrendingUp className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-2xl text-card-foreground">CINへようこそ</CardTitle>
-          <CardDescription>暗号資産投資を始めるために、ウォレットを接続してください</CardDescription>
+          <CardTitle className="text-2xl text-card-foreground">Welcome to CIN</CardTitle>
+          <CardDescription>Please connect your wallet to start your crypto investment.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
@@ -74,16 +74,16 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
             size="lg"
           >
             <Wallet className="mr-2 h-5 w-5" />
-            {isConnecting ? "接続中..." : "MetaMaskで接続"}
+            {isConnecting ? "Connecting..." : "Connect with MetaMask"}
           </Button>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Shield className="h-4 w-4" />
-            <span>安全なWeb3認証</span>
+            <span>Secure Web3 Authentication</span>
           </div>
 
           <div className="text-xs text-muted-foreground text-center">
-            ウォレットを接続することで、利用規約とプライバシーポリシーに同意したものとみなされます。
+            By connecting your wallet, you agree to our Terms of Service and Privacy Policy.
           </div>
         </CardContent>
       </Card>

@@ -1,35 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
-import { type Note, type Trade } from "@/lib/initial-data"
-import { getBrowserSupabase } from "@/lib/supabase" // Lazy-get supabase client for browser
+import { useState, useEffect, useCallback } from "react";
+import { type Note, type Trade } from "@/lib/initial-data";
+import { getBrowserSupabase } from "@/lib/supabase";
+import { useAuth } from "@/app/auth/context";
 
 export function useNotes() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [userId, setUserId] = useState<string | null>(null)
-
-  // Keep userId in sync with localStorage changes and on mount
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const read = () => setUserId(localStorage.getItem('walletAddress'))
-    read()
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'walletAddress') read()
-    }
-    const onFocus = () => read()
-    window.addEventListener('storage', onStorage)
-    window.addEventListener('focus', onFocus)
-    return () => {
-      window.removeEventListener('storage', onStorage)
-      window.removeEventListener('focus', onFocus)
-    }
-  }, [])
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { account: userId } = useAuth(); // Use account from useAuth as userId
 
   useEffect(() => {
     const fetchNotes = async () => {
-  if (!userId) {
+      if (!userId) {
+        setNotes([]);
         setLoading(false);
         return;
       }
@@ -38,8 +23,8 @@ export function useNotes() {
       try {
         const supabase = getBrowserSupabase();
         const { data, error } = await supabase
-          .from('notes')
-          .select('*, trades(*)')
+          .from("notes")
+          .select("*, trades(*)")
           .or(`user_id.eq.${userId},is_public.eq.true`);
 
         if (error) {
@@ -52,7 +37,9 @@ export function useNotes() {
         }
       } catch (e) {
         console.error("Supabase client not available:", e);
-        setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+        setError(
+          "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        );
         setNotes([]);
       }
       setLoading(false);
@@ -61,114 +48,138 @@ export function useNotes() {
     fetchNotes();
   }, [userId]); // Re-fetch when userId changes
 
-  // Accept note data without id/user_id/timestamps and without views/likes (set server-side defaults)
-  const addNote = useCallback(async (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'user_id' | 'views' | 'likes'>): Promise<boolean> => {
-    const currentUserId = typeof window !== 'undefined' ? (userId ?? localStorage.getItem('walletAddress')) : userId
-    if (!currentUserId) {
-      setError("User not authenticated.");
-      return false;
-    }
-
-  // Separate trades from the noteData
-  const { trades, is_public, ...noteToInsert } = noteData;
-
-  // Prepare row for notes table (trades are handled in a separate table)
-  const newNote: Omit<Note, 'createdAt' | 'updatedAt' | 'trades'> = { // Omit only timestamps and trades here
-      id: crypto.randomUUID(), // Generate a unique ID
-      ...noteToInsert,
-  user_id: currentUserId,
-      views: 0,
-      likes: 0,
-  is_public: typeof is_public === 'boolean' ? is_public : false,
-    };
-
-    let supabase;
-    try {
-      supabase = getBrowserSupabase();
-    } catch (e) {
-      console.error("Supabase client not available:", e);
-      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-      return false;
-    }
-    const { data: insertedNote, error: insertError } = await supabase
-      .from('notes')
-      .insert([newNote])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error("Error adding note:", JSON.stringify(insertError, null, 2));
-      setError(insertError.message);
-      return false;
-    }
-
-    if (insertedNote && trades && trades.length > 0) {
-  const tradesToInsert = trades.map((trade: NonNullable<Note['trades']>[number]) => ({
-        ...trade,
-        note_id: insertedNote.id, // Link trades to the new note
-      }));
-
-  const { error: tradesError } = await supabase
-        .from('trades')
-        .insert(tradesToInsert);
-
-      if (tradesError) {
-        console.error("Error adding trades:", JSON.stringify(tradesError, null, 2));
-        setError(tradesError.message);
-        // Optionally, you might want to delete the inserted note if trades insertion fails
-        // await supabase.from('notes').delete().eq('id', insertedNote.id);
+  const addNote = useCallback(
+    async (
+      noteData: Omit<
+        Note,
+        "id" | "createdAt" | "updatedAt" | "user_id" | "views" | "likes"
+      >
+    ): Promise<boolean> => {
+      if (!userId) {
+        setError("User not authenticated.");
         return false;
       }
-    }
 
-    if (insertedNote) {
-      // Re-fetch the note with trades to update the local state correctly
-  const { data: fullNote, error: fetchError } = await supabase
-        .from('notes')
-        .select('*, trades(*)') // Select trades along with the note
-        .eq('id', insertedNote.id)
+      const { trades, is_public, ...noteToInsert } = noteData;
+
+      const newNote: Omit<Note, "createdAt" | "updatedAt" | "trades"> = {
+        id: crypto.randomUUID(),
+        ...noteToInsert,
+        user_id: userId,
+        views: 0,
+        likes: 0,
+        is_public: typeof is_public === "boolean" ? is_public : false,
+      };
+
+      let supabase;
+      try {
+        supabase = getBrowserSupabase();
+      } catch (e) {
+        console.error("Supabase client not available:", e);
+        setError(
+          "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        );
+        return false;
+      }
+      const { data: insertedNote, error: insertError } = await supabase
+        .from("notes")
+        .insert([newNote])
+        .select()
         .single();
 
-      if (fetchError) {
-        console.error("Error fetching full note after insert:", JSON.stringify(fetchError, null, 2));
-        setError(fetchError.message);
+      if (insertError) {
+        console.error("Error adding note:", JSON.stringify(insertError, null, 2));
+        setError(insertError.message);
         return false;
-      } else if (fullNote) {
-        const normalized = mapDBNoteToNote(fullNote as DBNote);
-        setNotes((prevNotes) => [normalized, ...prevNotes]);
+      }
+
+      if (insertedNote && trades && trades.length > 0) {
+        const tradesToInsert = trades.map(
+          (trade: NonNullable<Note["trades"]>[number]) => ({
+            ...trade,
+            note_id: insertedNote.id,
+          })
+        );
+
+        const { error: tradesError } = await supabase
+          .from("trades")
+          .insert(tradesToInsert);
+
+        if (tradesError) {
+          console.error(
+            "Error adding trades:",
+            JSON.stringify(tradesError, null, 2)
+          );
+          setError(tradesError.message);
+          return false;
+        }
+      }
+
+      if (insertedNote) {
+        const { data: fullNote, error: fetchError } = await supabase
+          .from("notes")
+          .select("*, trades(*)")
+          .eq("id", insertedNote.id)
+          .single();
+
+        if (fetchError) {
+          console.error(
+            "Error fetching full note after insert:",
+            JSON.stringify(fetchError, null, 2)
+          );
+          setError(fetchError.message);
+          return false;
+        } else if (fullNote) {
+          const normalized = mapDBNoteToNote(fullNote as DBNote);
+          setNotes((prevNotes) => [normalized, ...prevNotes]);
+          return true;
+        }
+      }
+      return false;
+    },
+    [userId]
+  );
+
+  const updateNote = useCallback(
+    async (
+      noteId: string,
+      noteData: Partial<Omit<Note, "id" | "user_id">>
+    ): Promise<boolean> => {
+      let supabase;
+      try {
+        supabase = getBrowserSupabase();
+      } catch (e) {
+        console.error("Supabase client not available:", e);
+        setError(
+          "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        );
+        return false;
+      }
+      const { data, error: updateError } = await supabase
+        .from("notes")
+        .update(noteData)
+        .eq("id", noteId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error(
+          "Error updating note:",
+          JSON.stringify(updateError, null, 2)
+        );
+        setError(updateError.message);
+        return false;
+      } else if (data) {
+        const normalized = mapDBNoteToNote(data as DBNote);
+        setNotes((prevNotes) =>
+          prevNotes.map((n) => (n.id === noteId ? normalized : n))
+        );
         return true;
       }
-    }
-    return false;
-  }, [userId]);
-
-  const updateNote = useCallback(async (noteId: string, noteData: Partial<Omit<Note, 'id' | 'user_id'>>): Promise<boolean> => {
-    let supabase;
-    try {
-      supabase = getBrowserSupabase();
-    } catch (e) {
-      console.error("Supabase client not available:", e);
-      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
       return false;
-    }
-    const { data, error: updateError } = await supabase
-      .from('notes')
-      .update(noteData)
-      .eq('id', noteId)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.error("Error updating note:", JSON.stringify(updateError, null, 2));
-      setError(updateError.message);
-      return false;
-    } else if (data) {
-      const normalized = mapDBNoteToNote(data as DBNote);
-      setNotes((prevNotes) => prevNotes.map((n) => (n.id === noteId ? normalized : n)));
-      return true;
-    }
-    return false;
-  }, []);
+    },
+    []
+  );
 
   const deleteNote = useCallback(async (noteId: string) => {
     let supabase;
@@ -176,13 +187,15 @@ export function useNotes() {
       supabase = getBrowserSupabase();
     } catch (e) {
       console.error("Supabase client not available:", e);
-      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      setError(
+        "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+      );
       return;
     }
     const { error: deleteError } = await supabase
-      .from('notes')
+      .from("notes")
       .delete()
-      .eq('id', noteId);
+      .eq("id", noteId);
 
     if (deleteError) {
       console.error("Error deleting note:", deleteError);
@@ -198,10 +211,12 @@ export function useNotes() {
       supabase = getBrowserSupabase();
     } catch (e) {
       console.error("Supabase client not available:", e);
-      setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      setError(
+        "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+      );
       return;
     }
-    const { error } = await supabase.rpc('increment_view', {
+    const { error } = await supabase.rpc("increment_view", {
       note_id_arg: noteId,
     });
 
@@ -231,9 +246,9 @@ export function usePublicNotes() {
       try {
         const supabase = getBrowserSupabase();
         const { data, error } = await supabase
-          .from('notes')
-          .select('*, trades(*)')
-          .eq('is_public', true); // Filter by is_public
+          .from("notes")
+          .select("*, trades(*)")
+          .eq("is_public", true); // Filter by is_public
 
         if (error) {
           console.error("Error fetching public notes:", error);
@@ -245,7 +260,9 @@ export function usePublicNotes() {
         }
       } catch (e) {
         console.error("Supabase client not available:", e);
-        setError("Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+        setError(
+          "Supabase client is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        );
         setPublicNotes([]);
       }
       setLoading(false);
@@ -258,7 +275,7 @@ export function usePublicNotes() {
 }
 
 // ----- Types and helpers to normalize DB rows to Note interface -----
-type DBNote = Omit<Note, 'createdAt' | 'updatedAt'> & {
+type DBNote = Omit<Note, "createdAt" | "updatedAt"> & {
   created_at: string;
   updated_at: string;
   trades?: Trade[];

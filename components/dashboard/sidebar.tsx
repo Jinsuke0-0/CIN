@@ -1,41 +1,49 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { LayoutDashboard, FileText, PlusCircle, BarChart3, LogOut, FileSearch, Newspaper, Shield, Calendar, Wallet } from "lucide-react"
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/app/auth/context"; // Import useAuth
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  LayoutDashboard,
+  FileText,
+  PlusCircle,
+  BarChart3,
+  LogOut,
+  FileSearch,
+  Newspaper,
+  Shield,
+  Calendar,
+  Wallet,
+} from "lucide-react";
 
 interface SidebarProps {
-  className?: string
+  className?: string;
 }
 
 export function Sidebar({ className }: SidebarProps) {
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth(); // Use logout from useAuth
 
   const cinPrivateNav = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Investment Notes", href: "/notes", icon: FileText },
     { name: "Performance", href: "/analytics", icon: BarChart3 },
     { name: "Faucet", href: "/faucet", icon: Wallet },
-  ]
+  ];
 
   const cinPublicNav = [
     { name: "Open Notes", href: "/opennote", icon: FileSearch },
     { name: "Web3 News", href: "/web3-news", icon: Newspaper },
     { name: "DeFi", href: "/defi", icon: Shield },
     { name: "Official Events", href: "/official-events", icon: Calendar },
-  ]
-
-  const handleLogout = () => {
-    localStorage.removeItem("walletAddress")
-    router.push("/")
-  }
+  ];
 
   const handleNewNote = () => {
-    router.push("/notes?action=create")
-  }
+    router.push("/notes?action=create");
+  };
 
   return (
     <div className={cn("h-full flex flex-col", className)}>
@@ -47,14 +55,19 @@ export function Sidebar({ className }: SidebarProps) {
           </div>
 
           <div className="px-3 py-2">
-            <Button className="w-full mb-4 bg-primary hover:bg-primary/90" onClick={handleNewNote}>
+            <Button
+              className="w-full mb-4 bg-primary hover:bg-primary/90"
+              onClick={handleNewNote}
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               New Note
             </Button>
           </div>
 
           <div className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Private</h3>
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Private
+            </h3>
             {cinPrivateNav.map((item) => (
               <Link href={item.href} key={item.name} passHref>
                 <Button
@@ -70,7 +83,9 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
         <div className="px-3 py-2">
           <div className="space-y-1">
-            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Public</h3>
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Public
+            </h3>
             {cinPublicNav.map((item) => (
               <Link href={item.href} key={item.name} passHref>
                 <Button
@@ -88,15 +103,14 @@ export function Sidebar({ className }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={handleLogout}
+            onClick={logout} // Use logout from useAuth
           >
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
         </div>
       </div>
-      <div className="mt-auto px-3 py-4">
-      </div>
+      <div className="mt-auto px-3 py-4"></div>
     </div>
-  )
+  );
 }
